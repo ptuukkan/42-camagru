@@ -2,23 +2,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   index.php                                          :+:      :+:    :+:   */
+/*   NotFound.class.php                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/05 18:47:06 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/05 18:47:06 by ptuukkan         ###   ########.fr       */
+/*   Created: 2020/10/08 22:12:57 by ptuukkan          #+#    #+#             */
+/*   Updated: 2020/10/08 22:12:57 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-require_once "core/Router.class.php";
-require_once "core/Request.class.php";
+require_once "core/BaseController.class.php";
 
-$request = new Request();
-$router = new Router($request);
-$router->get("/", "Gallery");
-$router->get("user", "User");
-$router->post("user", "User");
-$controller = $router->route();
-$controller->run();
+class NotFound extends BaseController
+{
+	public function run()
+	{
+		http_response_code(404);
+		$this->render("main", "notfound");
+	}
 
+	public function __toString()
+	{
+		$str = "NotFound(" . PHP_EOL;
+		$str .= ")";
+		return $str;
+	}
+}

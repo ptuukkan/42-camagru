@@ -2,23 +2,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   index.php                                          :+:      :+:    :+:   */
+/*   Gallery.class.php                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/05 18:47:06 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/05 18:47:06 by ptuukkan         ###   ########.fr       */
+/*   Created: 2020/10/08 22:35:54 by ptuukkan          #+#    #+#             */
+/*   Updated: 2020/10/08 22:35:54 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-require_once "core/Router.class.php";
-require_once "core/Request.class.php";
+require_once "core/BaseController.class.php";
 
-$request = new Request();
-$router = new Router($request);
-$router->get("/", "Gallery");
-$router->get("user", "User");
-$router->post("user", "User");
-$controller = $router->route();
-$controller->run();
+class Gallery extends BaseController
+{
+	public function index($params)
+	{
+		$this->render("main", "gallery");
+	}
 
+	public function __toString()
+	{
+		$str = "GalleryController(" . PHP_EOL;
+		$str .= ")";
+		return $str;
+	}
+}

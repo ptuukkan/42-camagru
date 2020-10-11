@@ -1,24 +1,21 @@
-<?php
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   index.php                                          :+:      :+:    :+:   */
+/*   gallery.js                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/05 18:47:06 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/05 18:47:06 by ptuukkan         ###   ########.fr       */
+/*   Created: 2020/10/11 21:10:35 by ptuukkan          #+#    #+#             */
+/*   Updated: 2020/10/11 21:43:21 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-require_once "core/Router.class.php";
-require_once "core/Request.class.php";
-
-$request = new Request();
-$router = new Router($request);
-$router->get("/", "Gallery");
-$router->get("user", "User");
-$router->post("user", "User");
-$controller = $router->route();
-$controller->run();
+const likeButtons = document.getElementsByClassName("like-button");
+for (let likeButton of likeButtons) {
+	likeButton.addEventListener("click", event => {
+		const likesText = event.target.parentElement.querySelector(".num-of-likes")
+		const likes = Number(likesText.textContent);
+		likesText.textContent = String(likes + 1);
+	})
+}
 
