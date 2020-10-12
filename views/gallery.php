@@ -84,9 +84,9 @@
 		</div>
 		<div class="extra content">
    			<a class="show-comments">
-      			View all
+      			View all comments
     		</a>
-		  </div>
+		</div>
 	</div>
 	<div class="ui fluid card ten wide column centered">
 		<div class="content">
@@ -160,9 +160,9 @@
 		</div>
 		<div class="extra content">
    			<a class="show-comments">
-      			View all
+      			View all comments
     		</a>
-		  </div>
+		</div>
 	</div>
 	<div class="ten wide column centered">
 		<div class="ui pagination menu right floated">
