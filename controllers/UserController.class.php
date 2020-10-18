@@ -2,28 +2,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   NotFound.class.php                                 :+:      :+:    :+:   */
+/*   User.class.php                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/08 22:12:57 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/08 22:12:57 by ptuukkan         ###   ########.fr       */
+/*   Created: 2020/10/08 22:35:54 by ptuukkan          #+#    #+#             */
+/*   Updated: 2020/10/08 22:35:54 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 require_once "core/BaseController.class.php";
 
-class NotFound extends BaseController
+class UserController extends BaseController
 {
-	public function run()
+	public function login($params)
 	{
-		http_response_code(404);
-		$this->render("main", "notfound");
+		$this->render("main", "login");
+	}
+
+	public function signup($params)
+	{
+		$this->render("main", "signup");
 	}
 
 	public function __toString()
 	{
-		$str = "NotFound(" . PHP_EOL;
+		$str = "GalleryController(" . PHP_EOL;
 		$str .= ")";
 		return $str;
 	}

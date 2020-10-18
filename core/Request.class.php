@@ -16,7 +16,6 @@ class Request
 	public static $verbose = false;
 	public $method;
 	public $path;
-	public $action = false;
 	public $params = [];
 
 	public function __construct()
@@ -26,10 +25,8 @@ class Request
 		if (isset($array[1])) {
 			$this->params = $array[1];
 		}
-		$array = array_values(array_filter(explode('/', $array[0])));
 		$this->method = strtolower($_SERVER["REQUEST_METHOD"]);
 		$this->path = $array[0] ?? "/";
-		$this->action = $array[1] ?? "index";
 		if (self::$verbose) {
 			print("Request instance constructed" . PHP_EOL);
 		}

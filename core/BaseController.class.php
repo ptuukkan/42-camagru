@@ -15,10 +15,12 @@ class BaseController
 {
 	public static $verbose = false;
 	protected $_request;
+	private $_action;
 
-	public function __construct($request)
+	public function __construct($request, $action)
 	{
 		$this->_request = $request;
+		$this->_action = $action;
 
 		if (self::$verbose) {
 			print("Controller instance constructed" . PHP_EOL);
@@ -27,7 +29,7 @@ class BaseController
 
 	public function run()
 	{
-		call_user_func(array($this, $this->_request->action), $this->_request->params);
+		call_user_func(array($this, $this->_action), $this->_request->params);
 	}
 
 	public function render($layout, $view = null)

@@ -26,41 +26,40 @@ class Router
 		}
 	}
 
-	private function _getController()
+	private function _getcallback()
 	{
 		if (isset($this->_routes[$this->_request->method][$this->_request->path])) {
-			return $this->_routes[$this->_request->method][$this->_request->path];
+			$callback = $this->_routes[$this->_request->method][$this->_request->path];
+			require_once "controllers/" . $callback[0] . ".class.php";
+			if (method_exists($callback[0], $callback[1])) {
+				return $callback;
+			}
 		} else {
 			return false;
 		}
 	}
 
-	public function get($path, $controller)
+	public function get($path, $callback)
 	{
-		$this->_routes["get"][$path] = $controller;
+		$this->_routes["get"][$path] = $callback;
 	}
 
-	public function post($path, $controller)
+	public function post($path, $callback)
 	{
-		$this->_routes["post"][$path] = $controller;
+		$this->_routes["post"][$path] = $callback;
 	}
 
 	public function route()
 	{
-		$controller = $this->_getController();
-		if ($controller) {
-			require_once "controllers/" . $controller . ".class.php";
-			$controller = new $controller($this->_request);
-			if (method_exists($controller, $this->_request->action)) {
-				return $controller;
-			} else {
-				require_once "controllers/NotFound.class.php";
-				return new NotFound($this->_request);
-			}
+		$callback = $this->_getcallback();
+		if ($callback) {
+			require_once "controllers/" . $callback[0] . ".class.php";
+			$controller = new $callback[0]($this->_request, $callback[1]);
 		} else {
-			require_once "controllers/NotFound.class.php";
-			return new NotFound($this->_request);
+			require_once "controllers/NotFoundController.class.php";
+			$controller =  new NotFoundController($this->_request, null);
 		}
+		return $controller;
 	}
 
 	public function __destruct()

@@ -13,7 +13,7 @@
 
 require_once "core/BaseController.class.php";
 
-class Gallery extends BaseController
+class GalleryController extends BaseController
 {
 	public function index($params)
 	{

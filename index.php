@@ -16,9 +16,11 @@ require_once "core/Request.class.php";
 
 $request = new Request();
 $router = new Router($request);
-$router->get("/", "Gallery");
-$router->get("user", "User");
-$router->post("user", "User");
+$router->get("/", [GalleryController::class, "index"]);
+$router->get("/login", [UserController::class, "login"]);
+$router->get("/signup", [UserController::class, "signup"]);
+$router->post("/login", [UserController::class, "handleLogin"]);
+$router->post("/signup", [UserController::class, "handleSignup"]);
 $controller = $router->route();
 $controller->run();
 

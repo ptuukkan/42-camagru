@@ -6,11 +6,12 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/12 22:50:24 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/12 23:04:21 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/10/13 09:34:14 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const form = document.querySelector(".form");
+
 const inputFields = form.querySelectorAll("input");
 inputFields.forEach((inputField) => {
 	inputField.addEventListener("input", (event) => {
@@ -31,5 +32,7 @@ inputFields.forEach((inputField) => {
 
 form.addEventListener("submit", (event) => {
 	event.preventDefault();
-
+	if (form.classList.contains("error")) {
+		form.classList.remove("error");
+	}
 })

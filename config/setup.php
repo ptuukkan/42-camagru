@@ -11,7 +11,34 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-require_once("database.php");
+require_once "config/database.php";
 
+function connect()
+{
+	$dsn = str_replace('/;dbname=([^;]+);/', ';', $DB_DSN);
+	$pdo = new PDO($dsn, $DB_USER, $DB_PASSWORD, $DB_OPTIONS);
+	return $pdo;
+}
+
+function create()
+{
+	$pdo = connect();
+	$sql = "CREATE DATABASE IF NOT EXISTS $DB_DBNAME";
+	$pdo->prepare($sql)->execute();
+}
+
+function destroy()
+{
+
+}
+
+if ($argc === 1 || $argv[1] === "-i") {
+	create();
+} else if ($argc === 2 && $argv[1] === "-d") {
+	destroy();
+} else if ($argc === 2 && $argv[1] === "-r") {
+	destroy();
+	create();
+}
 
 ?>
