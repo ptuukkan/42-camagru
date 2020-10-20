@@ -11,19 +11,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-require_once "core/BaseController.class.php";
+require_once "BaseController.class.php";
 
 class GalleryController extends BaseController
 {
 	public function index($params)
 	{
-		$this->render("main", "gallery");
+		View::renderView("main", "gallery");
 	}
 
-	public function __toString()
+	public function edit($params)
 	{
-		$str = "GalleryController(" . PHP_EOL;
-		$str .= ")";
-		return $str;
+		View::renderMessage("main", "Edit Page");
 	}
 }

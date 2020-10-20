@@ -28,6 +28,7 @@ class Application
 		$this->_router = new Router($this->_request);
 
 		$this->_router->get("/", [GalleryController::class, "index"]);
+		$this->_router->get("/edit", [GalleryController::class, "edit"]);
 		$this->_router->get("/login", [UserController::class, "login"]);
 		$this->_router->get("/signup", [UserController::class, "signup"]);
 		$this->_router->post("/login", [UserController::class, "handleLogin"]);
@@ -44,10 +45,8 @@ class Application
 			$this->_controller = $this->_router->route();
 			call_user_func([$this->_controller, $this->_controller->action], $this->_request->params);
 		} catch (Exception $e) {
-			$view = new View("main", $e->getMessage());
-			$view->renderMessage();
+			View::renderMessage("main", $e->getCode() . "-" . $e->getMessage());
 		}
-		
 	}
 
 	public function __destruct()

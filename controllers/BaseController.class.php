@@ -2,29 +2,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   NotFound.class.php                                 :+:      :+:    :+:   */
+/*   BaseController.class.php                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/08 22:12:57 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/08 22:12:57 by ptuukkan         ###   ########.fr       */
+/*   Created: 2020/10/08 22:13:12 by ptuukkan          #+#    #+#             */
+/*   Updated: 2020/10/08 22:13:12 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-require_once "core/BaseController.class.php";
-
-class NotFoundController extends BaseController
+abstract class BaseController
 {
-	public function run()
+	public static $verbose = false;
+	public $action;
+
+	public function __construct($action)
 	{
-		http_response_code(404);
-		$this->render("main", "notfound");
+		$this->action = $action;
+
+		if (self::$verbose) {
+			print(static::class . " instance constructed" . PHP_EOL);
+		}
 	}
 
-	public function __toString()
+	public function __destruct()
 	{
-		$str = "NotFound(" . PHP_EOL;
-		$str .= ")";
-		return $str;
+		if (self::$verbose) {
+			print(static::class . " instance destructed" . PHP_EOL);
+		}
 	}
+
 }

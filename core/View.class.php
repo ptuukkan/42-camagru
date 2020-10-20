@@ -14,36 +14,32 @@
 class View
 {
 	public static $verbose = false;
-	private $_layout;
-	private $_view;
 
 	public function __construct($layout, $view)
 	{
-		$this->_layout = $layout;
-		$this->_view = $view;
-
 		if (self::$verbose) {
 			print("View instance constructed" . PHP_EOL);
 		}
 	}
 
-	public function renderView()
+	public static function renderView($layout, $view)
 	{
 		ob_start();
-		require_once "views/layouts/" . $this->_layout . ".php";
+		require_once "views/layouts/" . $layout . ".php";
 		$layout = ob_get_clean();
 		ob_start();
-		require_once "views/" . $this->_view . ".php";
+		require_once "views/" . $view . ".php";
 		$view = ob_get_clean();
 		echo str_replace("{{view}}", $view, $layout);
 	}
 
-	public function renderMessage()
+	public static function renderMessage($layout, $message)
 	{
 		ob_start();
-		require_once "views/layouts/" . $this->_layout . ".php";
+		require_once "views/layouts/" . $layout . ".php";
 		$layout = ob_get_clean();
-		echo str_replace("{{view}}", $this->_view, $layout);
+		$message = "<h2>$message</h2>";
+		echo str_replace("{{view}}", $message, $layout);
 	}
 
 	public function __destruct()

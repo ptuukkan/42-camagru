@@ -26,6 +26,16 @@ class Router
 		}
 	}
 
+	public function get($path, $callback)
+	{
+		$this->_routes["get"][$path] = $callback;
+	}
+
+	public function post($path, $callback)
+	{
+		$this->_routes["post"][$path] = $callback;
+	}
+
 	private function _getcallback()
 	{
 		if (isset($this->_routes[$this->_request->method][$this->_request->path])) {
@@ -39,25 +49,14 @@ class Router
 		}
 	}
 
-	public function get($path, $callback)
-	{
-		$this->_routes["get"][$path] = $callback;
-	}
-
-	public function post($path, $callback)
-	{
-		$this->_routes["post"][$path] = $callback;
-	}
-
 	public function route()
 	{
 		$callback = $this->_getcallback();
 		if ($callback) {
 			require_once "controllers/" . $callback[0] . ".class.php";
-			$controller = new $callback[0]($this->_request, $callback[1]);
+			$controller = new $callback[0]($callback[1]);
 		} else {
-			require_once "controllers/NotFoundController.class.php";
-			$controller =  new NotFoundController($this->_request, null);
+			throw new Exception("Page not found", 404);
 		}
 		return $controller;
 	}

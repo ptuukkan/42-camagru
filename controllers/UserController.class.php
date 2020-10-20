@@ -11,24 +11,30 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-require_once "core/BaseController.class.php";
+require_once "BaseController.class.php";
+require_once "models/UserModel.class.php";
 
 class UserController extends BaseController
 {
 	public function login($params)
 	{
-		$this->render("main", "login");
+		View::renderView("main", "login");
 	}
 
 	public function signup($params)
 	{
-		$this->render("main", "signup");
+		View::renderView("main", "signup");
 	}
 
-	public function __toString()
+	public function handleSignup($params)
 	{
-		$str = "GalleryController(" . PHP_EOL;
-		$str .= ")";
-		return $str;
+		try {
+			$user = new UserModel();
+			$user->setAttributes($params);
+			$user->validate();
+			$user->save();
+		} catch (Exception $e) {
+			echo "error\n";
+		}
 	}
 }

@@ -28,7 +28,7 @@
   </div>
   <div class="field required">
     <label>Confirm password</label>
-    <input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm Password">
+    <input type="password" name="password_confirm" id="password_confirm" placeholder="Confirm Password">
   </div>
   <div class="ui success message">
     <div class="header">Registered!</div>
@@ -38,4 +38,4 @@
   <button class="ui button" type="button" onclick="window.location.href='/'">Cancel</button>
 </form>
 </div>
-<script src=/public/js/signup.js></script>
+<!-- <script src=/public/js/signup.js></script> -->

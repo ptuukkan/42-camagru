@@ -1,5 +1,6 @@
 <?php
 
-require_once "core/Database.class.php";
+require_once "models/UserModel.class.php";
 
-$db = new Database();
+UserModel::$verbose = true;
+$user = new UserModel();

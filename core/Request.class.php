@@ -20,12 +20,15 @@ class Request
 
 	public function __construct()
 	{
+		$this->method = strtolower($_SERVER["REQUEST_METHOD"]);
 		$request_uri = strtolower(filter_var($_SERVER["REQUEST_URI"], FILTER_SANITIZE_URL));
 		$array = explode("?", $request_uri);
-		if (isset($array[1])) {
+		if ($this->method === "get" && isset($array[1])) {
 			$this->params = $array[1];
+		} else if ($this->method === "post") {
+			$this->params = $_POST;
 		}
-		$this->method = strtolower($_SERVER["REQUEST_METHOD"]);
+
 		$this->path = $array[0] ?? "/";
 		if (self::$verbose) {
 			print("Request instance constructed" . PHP_EOL);
