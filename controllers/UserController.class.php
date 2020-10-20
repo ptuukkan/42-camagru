@@ -32,9 +32,11 @@ class UserController extends BaseController
 			$user = new UserModel();
 			$user->setAttributes($params);
 			$user->validate();
-			$user->save();
-		} catch (Exception $e) {
-			echo "error\n";
+			//$user->save();
+		} catch (NotValidException $e) {
+			View::renderView("main", "signup", [
+				"values" => $params, "errors" => $e->getErrors()
+			]);
 		}
 	}
 }

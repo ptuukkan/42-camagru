@@ -13,10 +13,11 @@
 ?>
 
 <div class="ui grid">
-<form class="ui form six wide column centered" method="post">
+<form class="ui form six wide column centered <?= (isset($params["errors"])) ? "error" : "" ?>" method="post">
   <div class="field required">
     <label>Email address</label>
     <input type="text" name="email" id="email" placeholder="Email address">
+	<?= self::_printFieldErrors("email", $params) ?>
   </div>
   <div class="field required">
     <label>Username</label>

@@ -22,6 +22,24 @@ abstract class BaseModel
 		}
 	}
 
+	protected abstract function tableName();
+
+	public static function findOne($filter)
+	{
+		$table = static::tableName();
+		$fields = array_keys($filter);
+		$fields = array_map(function($field) {
+			return "$field = :$field";
+		}, $fields);
+		$sql = "SELECT * FROM " . $table . " WHERE " . implode(" AND ", $fields);
+		$statement = Application::$db->prepare($sql);
+		foreach ($filter as $field => $value) {
+			$statement->bindValue(":$field", $value);
+		}
+		$statement->execute();
+		return $statement->fetchObject(static::class);
+	}
+
 	public function __destruct()
 	{
 		if (self::$verbose) {

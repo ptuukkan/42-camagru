@@ -14,6 +14,7 @@
 require_once "core/Request.class.php";
 require_once "core/Router.class.php";
 require_once "core/View.class.php";
+require_once "core/Database.class.php";
 
 class Application
 {
@@ -21,11 +22,13 @@ class Application
 	private $_request;
 	private $_router;
 	private $_controller;
+	public static $db;
 
 	public function __construct()
 	{
 		$this->_request = new Request();
 		$this->_router = new Router($this->_request);
+		self::$db = new Database();
 
 		$this->_router->get("/", [GalleryController::class, "index"]);
 		$this->_router->get("/edit", [GalleryController::class, "edit"]);

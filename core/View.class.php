@@ -22,7 +22,20 @@ class View
 		}
 	}
 
-	public static function renderView($layout, $view)
+	private static function _printFieldErrors($field, $params)
+	{
+		$string = "";
+		if (isset($params["errors"][$field])) {
+			$string .= '<div class="ui error message">';
+			foreach ($params["errors"][$field] as $error) {
+				$string .= "<p>$error</p>";
+			}
+			$string .= '</div>';
+		}
+		return $string;
+	}
+
+	public static function renderView($layout, $view, $params = [])
 	{
 		ob_start();
 		require_once "views/layouts/" . $layout . ".php";
