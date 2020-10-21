@@ -22,11 +22,13 @@ abstract class BaseModel
 		}
 	}
 
-	protected abstract function tableName();
+	protected abstract function _tableName();
+
+	protected abstract function _propertiesInDb();
 
 	public static function findOne($filter)
 	{
-		$table = static::tableName();
+		$table = static::_tableName();
 		$fields = array_keys($filter);
 		$fields = array_map(function($field) {
 			return "$field = :$field";
@@ -38,6 +40,23 @@ abstract class BaseModel
 		}
 		$statement->execute();
 		return $statement->fetchObject(static::class);
+	}
+
+	public function save()
+	{
+		$table = static::_tableName();
+		$properties = static::_propertiesInDb();
+		$valuePlaceholders = array_map(function($propery) {
+			return ":$property";
+		}, $properties);
+		$sql = "INSERT INTO $table (" . implode(", ", $properties) .
+			") VALUES (" . implode(", ", $valuePlaceholders) . ")";
+		$statement = Application::$db->prepare($sql);
+		foreach ($properties as $property) {
+			$statement->bindValue(":$property", $this->{$property});
+		}
+		$statement->execute();
+		return true;
 	}
 
 	public function __destruct()

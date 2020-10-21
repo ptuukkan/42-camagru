@@ -15,23 +15,29 @@ require_once "BaseModel.class.php";
 
 class UserModel extends BaseModel
 {
-	private $_errors = [];
-	private $_email = "";
-	private $_username = "";
-	private $_password = "";
-	private $_passwordConfirm = "";
+	private $errors = [];
+	private $email = "";
+	private $username = "";
+	private $password = "";
+	private $passwordConfirm = "";
+	private $email_confirmed = false;
 
-	protected function tableName()
+	protected function _tableName()
 	{
 		return "users";
 	}
 
+	protected function _propertiesInDb()
+	{
+		return ["email", "username", "password", "email_confirmed"];
+	}
+
 	public function setAttributes($params)
 	{
-		$this->_email = $params["email"];
-		$this->_username = $params["username"];
-		$this->_password = $params["password"];
-		$this->_passwordConfirm = $params["password_confirm"];
+		$this->email = $params["email"];
+		$this->username = $params["username"];
+		$this->password = $params["password"];
+		$this->passwordConfirm = $params["password_confirm"];
 	}
 
 	private function _setError($attribute, $error)
@@ -41,27 +47,27 @@ class UserModel extends BaseModel
 
 	private function _validateEmail()
 	{
-		$valid = filter_var($this->_email, FILTER_VALIDATE_EMAIL);
+		$valid = filter_var($this->email, FILTER_VALIDATE_EMAIL);
 		if (!$valid) {
 			$this->_setError("email", "Email address is not valid");
 		}
-		if ($valid && self::findOne(["email" => $this->_email])) {
+		if ($valid && self::findOne(["email" => $this->email])) {
 			$this->_setError("email", "Email address is already in use");
 		}
 	}
 
 	private function _validateUsername()
 	{
-		if (strlen($this->_username) < 3) {
+		if (strlen($this->username) < 3) {
 			$this->_setError("username", "Username must be at least 3 characters");
 		}
-		$valid = filter_var($this->_username, FILTER_VALIDATE_REGEXP, [
+		$valid = filter_var($this->username, FILTER_VALIDATE_REGEXP, [
 			"options" => ["regexp" => "/^[a-zA-Z0-9]+$/"]
 		]);
 		if (!$valid) {
 			$this->_setError("username", "Username must contain only alphanumeric characters");
 		}
-		if ($valid && self::findOne(["username" => $this->_username])) {
+		if ($valid && self::findOne(["username" => $this->username])) {
 			$this->_setError("username", "Username is already in use");
 		}
 
@@ -69,15 +75,15 @@ class UserModel extends BaseModel
 
 	private function _validatePassword()
 	{
-		if (strlen($this->_password) < 8) {
+		if (strlen($this->password) < 8) {
 			$this->_setError("password", "Password must be at least 8 characters");
 		}
-		if (!filter_var($this->_password, FILTER_VALIDATE_REGEXP, [
+		if (!filter_var($this->password, FILTER_VALIDATE_REGEXP, [
 			"options" => ["regexp" => "/[A-Z]/"]
 		])) {
 			$this->_setError("password", "Password must contain at least 1 uppercase character");
 		}
-		if (!filter_var($this->_password, FILTER_VALIDATE_REGEXP, [
+		if (!filter_var($this->password, FILTER_VALIDATE_REGEXP, [
 			"options" => ["regexp" => "/[0-9]/"]
 		])) {
 			$this->_setError("password", "Password must contain at least 1 number");
@@ -86,7 +92,7 @@ class UserModel extends BaseModel
 
 	private function _validatePwConfirm()
 	{
-		if ($this->_password !== $this->_passwordConfirm) {
+		if ($this->password !== $this->passwordConfirm) {
 			$this->_setError("password_confirm", "Passwords do not match");
 		}
 	}
