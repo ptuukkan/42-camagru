@@ -31,5 +31,4 @@ abstract class BaseController
 			print(static::class . " instance destructed" . PHP_EOL);
 		}
 	}
-
 }

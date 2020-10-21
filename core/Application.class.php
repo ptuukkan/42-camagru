@@ -15,6 +15,7 @@ require_once "core/Request.class.php";
 require_once "core/Router.class.php";
 require_once "core/View.class.php";
 require_once "core/Database.class.php";
+require_once "core/Session.class.php";
 
 class Application
 {
@@ -22,7 +23,9 @@ class Application
 	private $_request;
 	private $_router;
 	private $_controller;
-	public static $db;
+	public $db;
+	public $session;
+	public static $app;
 
 	public function __construct()
 	{
@@ -36,6 +39,9 @@ class Application
 		$this->_router->post("/login", [UserController::class, "handleLogin"]);
 		$this->_router->post("/signup", [UserController::class, "handleSignup"]);
 
+		$this->session = new Session();
+		self::$app = $this;
+
 		if (self::$verbose) {
 			print("Application instance constructed" . PHP_EOL);
 		}
@@ -44,7 +50,7 @@ class Application
 	public function run()
 	{
 		try {
-			self::$db = new Database();
+			$this->db = new Database();
 			$this->_controller = $this->_router->route();
 			call_user_func([$this->_controller, $this->_controller->action], $this->_request->params);
 		} catch (Exception $e) {

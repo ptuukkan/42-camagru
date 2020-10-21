@@ -16,11 +16,22 @@ require_once "BaseModel.class.php";
 class UserModel extends BaseModel
 {
 	private $errors = [];
-	private $email = "";
-	private $username = "";
-	private $password = "";
+	protected $id = "";
+	protected $email = "";
+	protected $username = "";
+	protected $password = "";
 	private $passwordConfirm = "";
-	private $email_confirmed = false;
+	protected $email_confirmed = false;
+
+	public function getId()
+	{
+		return $this->id;
+	}
+
+	public function getEmailConfirmed()
+	{
+		return $this->email_confirmed;
+	}
 
 	protected function _tableName()
 	{
@@ -32,12 +43,28 @@ class UserModel extends BaseModel
 		return ["email", "username", "password", "email_confirmed"];
 	}
 
+	public function login($params)
+	{
+		$this->setAttributes($params);
+		$this->_validateUsername();
+		$this->_validatePassword();
+		if (!empty($this->errors)) {
+			return null;
+		}
+		$user = self::findOne(["username" => $this->username]);
+		if ($user && password_verify($params["password"], $user->password)) {
+			return $user;
+		} else {
+			return null;
+		}
+	}
+
 	public function setAttributes($params)
 	{
-		$this->email = $params["email"];
-		$this->username = $params["username"];
-		$this->password = $params["password"];
-		$this->passwordConfirm = $params["password_confirm"];
+		$this->email = $params["email"] ?? "";
+		$this->username = $params["username"] ?? "";
+		$this->password = $params["password"] ?? "";
+		$this->passwordConfirm = $params["password_confirm"] ?? "";
 	}
 
 	private function _setError($attribute, $error)
@@ -103,14 +130,21 @@ class UserModel extends BaseModel
 		$this->_validateUsername();
 		$this->_validatePassword();
 		$this->_validatePwConfirm();
+		$this->password = password_hash($this->password, PASSWORD_BCRYPT);
+		$this->passwordConfirm = "";
 		if (!empty($this->_errors)) {
 			require_once "core/NotValidException.class.php";
 			throw new NotValidException($this->_errors);
 		}
 	}
 
-	public function save()
+	public function __toString()
 	{
-		throw new PDOException();
+		$str = "UserModel(" . PHP_EOL;
+		$str .= "email: " . $this->email . PHP_EOL;
+		$str .= "username: " . $this->username . PHP_EOL;
+		$str .= "password: " . $this->password . PHP_EOL;
+		$str .= ")";
+		return $str;
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   login.js                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: ptuukkan <ptuukkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/12 22:50:24 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/13 09:34:14 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/10/21 21:45:00 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,3 @@ inputFields.forEach((inputField) => {
 		}
 	});
 });
-
-form.addEventListener("submit", (event) => {
-	event.preventDefault();
-	if (form.classList.contains("error")) {
-		form.classList.remove("error");
-	}
-})

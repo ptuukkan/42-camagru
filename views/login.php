@@ -13,20 +13,29 @@
 ?>
 
 <div class="ui grid">
-<form class="ui form six wide column centered" method="post">
+<form class="ui form six wide column centered <?= (isset($params["errors"])) ? "error" : "" ?>" method="post">
   <div class="field required">
     <label>Username</label>
-    <input type="text" name="username" placeholder="Username" id="username">
+    <input
+		type="text"
+		name="username"
+		placeholder="Username"
+		id="username"
+		value=<?= (isset($params["values"]["username"])) ? $params["values"]["username"] : "" ?>
+	>
   </div>
   <div class="field required">
     <label>Password</label>
-    <input type="password" name="password" placeholder="Password" id="password">
+    <input
+		type="password"
+		name="password"
+		placeholder="Password"
+		id="password"
+		value=<?= (isset($params["values"]["password"])) ? $params["values"]["password"] : "" ?>
+	>
   </div>
-  <div class="ui error message">
-    <p>Error logging in</p>
-  </div>
-  <button class="ui button primary disabled" type="submit" id="submit">Login</button>
+  <?= self::_printFieldErrors("global", $params) ?>
+  <button class="ui button primary" type="submit" id="submit">Login</button>
   <button class="ui button" type="button" onclick="window.location.href='/'">Cancel</button>
 </form>
 </div>
-<script src=/public/js/login.js></script>

@@ -34,7 +34,7 @@ abstract class BaseModel
 			return "$field = :$field";
 		}, $fields);
 		$sql = "SELECT * FROM " . $table . " WHERE " . implode(" AND ", $fields);
-		$statement = Application::$db->prepare($sql);
+		$statement = Application::$app->db->prepare($sql);
 		foreach ($filter as $field => $value) {
 			$statement->bindValue(":$field", $value);
 		}
@@ -46,17 +46,21 @@ abstract class BaseModel
 	{
 		$table = static::_tableName();
 		$properties = static::_propertiesInDb();
-		$valuePlaceholders = array_map(function($propery) {
+		$valuePlaceholders = array_map(function($property) {
 			return ":$property";
 		}, $properties);
 		$sql = "INSERT INTO $table (" . implode(", ", $properties) .
 			") VALUES (" . implode(", ", $valuePlaceholders) . ")";
-		$statement = Application::$db->prepare($sql);
+		$statement = Application::$app->db->prepare($sql);
 		foreach ($properties as $property) {
-			$statement->bindValue(":$property", $this->{$property});
+			if (is_bool($this->{$property})) {
+				$statement->bindValue(":$property", $this->{$property}, PDO::PARAM_BOOL);
+			} else {
+				$statement->bindValue(":$property", $this->{$property});
+			}
 		}
 		$statement->execute();
-		return true;
+		return Application::$app->db->lastInsertId();
 	}
 
 	public function __destruct()

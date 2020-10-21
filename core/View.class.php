@@ -22,6 +22,14 @@ class View
 		}
 	}
 
+	private static function _loggedIn()
+	{
+		if (Application::$app->session->loggedIn) {
+			return true;
+		}
+		return false;
+	}
+
 	private static function _printFieldErrors($field, $params)
 	{
 		$string = "";

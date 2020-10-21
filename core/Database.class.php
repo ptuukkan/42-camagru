@@ -32,6 +32,11 @@ class Database
 		return $this->_pdo->prepare($sql);
 	}
 
+	public function lastInsertId()
+	{
+		return $this->_pdo->lastInsertId();
+	}
+
 	public function __destruct()
 	{
 		if (self::$verbose) {

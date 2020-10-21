@@ -18,12 +18,39 @@ class UserController extends BaseController
 {
 	public function login($params)
 	{
+		if (Application::$app->session->loggedIn) {
+			header("Location: /");
+		}
 		View::renderView("main", "login");
 	}
 
 	public function signup($params)
 	{
+		if (Application::$app->session->loggedIn) {
+			header("Location: /");
+		}
 		View::renderView("main", "signup");
+	}
+
+	public function handleLogin($params)
+	{
+		$user = null;
+		try {
+			$user = new UserModel();
+			$user = $user->login($params);
+		} catch (Exception $e) {
+			View::renderView("main", "login", [
+				"values" => $params, "errors" => ["global" => [$e->getMessage()]]
+			]);
+		}
+		if ($user) {
+			Application::$app->session->setSession($user->getId(), $user->getEmailConfirmed());
+			header("Location: /");
+		} else {
+			View::renderView("main", "login", [
+				"values" => $params, "errors" => ["global" => ["Login failed"]]
+			]);
+		}
 	}
 
 	public function handleSignup($params)
@@ -38,11 +65,13 @@ class UserController extends BaseController
 				]);
 			}
 			try {
-				$user->save();
-			} catch (PDOException $e) {
+				$id = $user->save();
+			} catch (Exception $e) {
 				View::renderView("main", "signup", [
-					"values" => $params, "errors" => ["global" => ["Internal server error"]]
+					"values" => $params, "errors" => ["global" => [$e->getMessage()]]
 				]);
 			}
+			Application::$app->session->setSession($id, $user->getEmailConfirmed());
+			header("Location: /");
 	}
 }

@@ -25,8 +25,12 @@
 		<a class="item" href="/">Gallery</a>
 		<a class="item" href="/edit">Edit</a>
 		<div class="right menu">
-			<a class="item" href="/login">Log in</a>
-			<a class="item" href="/signup">Sign Up</a>
+			<?= (View::_loggedIn()) ?
+			'<a class="item" href="/profile">Edit profile</a>
+			<a class="item" href="/logout">Log out</a>' :
+			'<a class="item" href="/login">Log in</a>
+			<a class="item" href="/signup">Sign Up</a>'
+			?>
 		</div>
 	</div>
 	<div class="ui container">
