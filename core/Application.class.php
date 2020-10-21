@@ -28,7 +28,6 @@ class Application
 	{
 		$this->_request = new Request();
 		$this->_router = new Router($this->_request);
-		self::$db = new Database();
 
 		$this->_router->get("/", [GalleryController::class, "index"]);
 		$this->_router->get("/edit", [GalleryController::class, "edit"]);
@@ -45,6 +44,7 @@ class Application
 	public function run()
 	{
 		try {
+			self::$db = new Database();
 			$this->_controller = $this->_router->route();
 			call_user_func([$this->_controller, $this->_controller->action], $this->_request->params);
 		} catch (Exception $e) {

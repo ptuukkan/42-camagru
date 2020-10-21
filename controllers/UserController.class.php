@@ -28,15 +28,21 @@ class UserController extends BaseController
 
 	public function handleSignup($params)
 	{
-		try {
 			$user = new UserModel();
 			$user->setAttributes($params);
-			$user->validate();
-			//$user->save();
-		} catch (NotValidException $e) {
-			View::renderView("main", "signup", [
-				"values" => $params, "errors" => $e->getErrors()
-			]);
-		}
+			try {
+				$user->validate();
+			} catch (NotValidException $e) {
+				View::renderView("main", "signup", [
+					"values" => $params, "errors" => $e->getErrors()
+				]);
+			}
+			try {
+				$user->save();
+			} catch (PDOException $e) {
+				View::renderView("main", "signup", [
+					"values" => $params, "errors" => ["global" => ["Internal server error"]]
+				]);
+			}
 	}
 }

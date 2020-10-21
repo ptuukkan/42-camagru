@@ -101,6 +101,10 @@ class UserModel extends BaseModel
 			require_once "core/NotValidException.class.php";
 			throw new NotValidException($this->_errors);
 		}
-		
+	}
+
+	public function save()
+	{
+		throw new PDOException();
 	}
 }

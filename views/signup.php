@@ -16,27 +16,50 @@
 <form class="ui form six wide column centered <?= (isset($params["errors"])) ? "error" : "" ?>" method="post">
   <div class="field required">
     <label>Email address</label>
-    <input type="text" name="email" id="email" placeholder="Email address">
-	<?= self::_printFieldErrors("email", $params) ?>
+    <input
+      type="text"
+      name="email"
+      id="email"
+      placeholder="Email address"
+      value=<?= (isset($params["values"]["email"])) ? $params["values"]["email"] : "" ?>
+    >
+	  <?= self::_printFieldErrors("email", $params) ?>
   </div>
   <div class="field required">
     <label>Username</label>
-    <input type="text" name="username" id="username" placeholder="Username">
+    <input
+      type="text"
+      name="username"
+      id="username"
+      placeholder="Username"
+      value=<?= (isset($params["values"]["username"])) ? $params["values"]["username"] : "" ?>
+    >
+    <?= self::_printFieldErrors("username", $params) ?>
   </div>
   <div class="field required">
     <label>Password</label>
-    <input type="password" name="password" id="password" placeholder="Password">
+    <input
+      type="password"
+      name="password"
+      id="password"
+      placeholder="Password"
+      value=<?= (isset($params["values"]["password"])) ? $params["values"]["password"] : "" ?>
+    >
+    <?= self::_printFieldErrors("password", $params) ?>
   </div>
   <div class="field required">
     <label>Confirm password</label>
-    <input type="password" name="password_confirm" id="password_confirm" placeholder="Confirm Password">
+    <input
+      type="password"
+      name="password_confirm"
+      id="password_confirm"
+      placeholder="Confirm Password"
+      value=<?= (isset($params["values"]["password_confirm"])) ? $params["values"]["password_confirm"] : "" ?>
+    >
+    <?= self::_printFieldErrors("password_confirm", $params) ?>
   </div>
-  <div class="ui success message">
-    <div class="header">Registered!</div>
-    <p>You have been succesfully signed up for Camagru. We've sent you an confirmation email!</p>
-  </div>
+  <?= self::_printFieldErrors("global", $params) ?>
   <button class="ui button primary" type="submit">Sign Up</button>
   <button class="ui button" type="button" onclick="window.location.href='/'">Cancel</button>
 </form>
 </div>
-<!-- <script src=/public/js/signup.js></script> -->
