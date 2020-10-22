@@ -2,7 +2,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signup.php                                         :+:      :+:    :+:   */
+/*   profile.php                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,30 +14,30 @@
 
 <div class="ui grid">
 <form class="ui form six wide column centered <?= (isset($params["errors"])) ? "error" : "" ?>" method="post">
-  <div class="field required">
+  <div class="field">
     <label>Email address</label>
     <input
       type="text"
       name="email"
       id="email"
       placeholder="Email address"
-      value=<?= (isset($params["values"]["email"])) ? $params["values"]["email"] : "" ?>
+      value=<?= $params["values"]["email"] ?>
     >
 	  <?= self::_printFieldErrors("email", $params) ?>
   </div>
-  <div class="field required">
+  <div class="field">
     <label>Username</label>
     <input
       type="text"
       name="username"
       id="username"
       placeholder="Username"
-      value=<?= (isset($params["values"]["username"])) ? $params["values"]["username"] : "" ?>
+      value=<?= $params["values"]["username"] ?>
     >
     <?= self::_printFieldErrors("username", $params) ?>
   </div>
   <div class="field required">
-    <label>Password</label>
+    <label>Current Password</label>
     <input
       type="password"
       name="password"
@@ -47,7 +47,18 @@
     >
     <?= self::_printFieldErrors("password", $params) ?>
   </div>
-  <div class="field required">
+  <div class="field">
+    <label>New Password</label>
+    <input
+      type="password"
+      name="new_password"
+      id="new_password"
+      placeholder="New Password"
+      value=<?= (isset($params["values"]["new_password"])) ? $params["values"]["new_password"] : "" ?>
+    >
+    <?= self::_printFieldErrors("password", $params) ?>
+  </div>
+  <div class="field">
     <label>Confirm password</label>
     <input
       type="password"
@@ -59,7 +70,10 @@
     <?= self::_printFieldErrors("password_confirm", $params) ?>
   </div>
   <?= self::_printFieldErrors("global", $params) ?>
-  <button class="ui button primary" type="submit">Sign Up</button>
+  <button class="ui button primary" type="submit">Save</button>
   <button class="ui button" type="button" onclick="window.location.href='/'">Cancel</button>
+  <?= ($params["values"]["email_confirmed"]) ? "" : 
+  '<button class="ui button primary" type="button">Re-send activation link</button>' ?>
 </form>
 </div>
+<script src=/public/js/profile.js></script>

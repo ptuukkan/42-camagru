@@ -16,7 +16,7 @@ require_once "BaseModel.class.php";
 class UserModel extends BaseModel
 {
 	private $errors = [];
-	protected $id = "";
+	protected $id = null;
 	protected $email = "";
 	protected $username = "";
 	protected $password = "";
@@ -26,6 +26,16 @@ class UserModel extends BaseModel
 	public function getId()
 	{
 		return $this->id;
+	}
+
+	public function getEmail()
+	{
+		return $this->email;
+	}
+
+	public function getUsername()
+	{
+		return $this->username;
 	}
 
 	public function getEmailConfirmed()
@@ -141,6 +151,7 @@ class UserModel extends BaseModel
 	public function __toString()
 	{
 		$str = "UserModel(" . PHP_EOL;
+		$str .= "id: " . $this->id . PHP_EOL;
 		$str .= "email: " . $this->email . PHP_EOL;
 		$str .= "username: " . $this->username . PHP_EOL;
 		$str .= "password: " . $this->password . PHP_EOL;

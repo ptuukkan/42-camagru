@@ -42,7 +42,7 @@ abstract class BaseModel
 		return $statement->fetchObject(static::class);
 	}
 
-	public function save()
+	private function _insert()
 	{
 		$table = static::_tableName();
 		$properties = static::_propertiesInDb();
@@ -61,6 +61,15 @@ abstract class BaseModel
 		}
 		$statement->execute();
 		return Application::$app->db->lastInsertId();
+	}
+
+	public function save()
+	{
+		if ($this->id) {
+			$this->_insert();
+		} else {
+			$this->_update();
+		}
 	}
 
 	public function __destruct()

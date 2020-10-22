@@ -35,9 +35,12 @@ class Application
 		$this->_router->get("/", [GalleryController::class, "index"]);
 		$this->_router->get("/edit", [GalleryController::class, "edit"]);
 		$this->_router->get("/login", [UserController::class, "login"]);
+		$this->_router->get("/logout", [UserController::class, "logout"]);
 		$this->_router->get("/signup", [UserController::class, "signup"]);
+		$this->_router->get("/profile", [UserController::class, "profile"]);
 		$this->_router->post("/login", [UserController::class, "handleLogin"]);
 		$this->_router->post("/signup", [UserController::class, "handleSignup"]);
+		$this->_router->post("/profile", [UserController::class, "saveProfile"]);
 
 		$this->session = new Session();
 		self::$app = $this;

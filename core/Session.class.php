@@ -14,15 +14,15 @@
 class Session
 {
 	public static $verbose = false;
-	private $_userId = null;
-	private $_emailConfirmed = false;
+	public $userId = null;
+	public $emailConfirmed = false;
 	public $loggedIn = false;
 
 	public function __construct()
 	{
 		session_start();
 		$this->loadSession();
-		if ($this->_userId) {
+		if ($this->userId) {
 			$this->loggedIn = true;
 		}
 		if (self::$verbose) {
@@ -32,24 +32,33 @@ class Session
 
 	public function loadSession()
 	{
-		$this->_userId = $_SESSION["logged_on_user"]["userid"] ?? "";
-		$this->_emailConfirmed = $_SESSION["logged_on_user"]["email_confirmed"] ?? false;
+		$this->userId = $_SESSION["logged_on_user"]["userid"] ?? "";
+		$this->emailConfirmed = $_SESSION["logged_on_user"]["email_confirmed"] ?? false;
 	}
 
 	public function setSession($userId, $emailConfirmed)
 	{
-		$this->_userId = $userId;
-		$this->_emailConfirmed = $emailConfirmed;
+		$this->userId = $userId;
+		$this->emailConfirmed = $emailConfirmed;
 		$this->loggedIn = true;
 		$_SESSION["logged_on_user"]["userid"] = $userId;
 		$_SESSION["logged_on_user"]["email_confirmed"] = $emailConfirmed;
 	}
 
+	public function logout()
+	{
+		$this->loggedIn = false;
+		$this->userId = null;
+		$this->emailConfirmed = false;
+		unset($_SESSION["logged_on_user"]);
+	}
+
 	public function __toString()
 	{
 		$str = "Session(" . PHP_EOL;
-		$str .= "userId: " . $this->_userId . PHP_EOL;
-		$str .= "emailConfirmed: " . $this->_emailConfirmed . PHP_EOL;
+		$str .= "userId: " . $this->userId . PHP_EOL;
+		$str .= "emailConfirmed: " . $this->emailConfirmed . PHP_EOL;
+		$str .= "loggndIN: " . $this->loggedIn . PHP_EOL;
 		$str .= ")";
 		return $str;
 	}
