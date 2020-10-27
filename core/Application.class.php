@@ -38,6 +38,7 @@ class Application
 		$this->_router->get("/logout", [UserController::class, "logout"]);
 		$this->_router->get("/signup", [UserController::class, "signup"]);
 		$this->_router->get("/profile", [UserController::class, "profile"]);
+		$this->_router->get("/verify", [UserController::class, "verifyEmail"]);
 		$this->_router->post("/login", [UserController::class, "handleLogin"]);
 		$this->_router->post("/signup", [UserController::class, "handleSignup"]);
 		$this->_router->post("/profile", [UserController::class, "saveProfile"]);

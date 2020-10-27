@@ -56,7 +56,7 @@
       placeholder="New Password"
       value=<?= (isset($params["values"]["new_password"])) ? $params["values"]["new_password"] : "" ?>
     >
-    <?= self::_printFieldErrors("password", $params) ?>
+    <?= self::_printFieldErrors("new_password", $params) ?>
   </div>
   <div class="field">
     <label>Confirm password</label>
@@ -72,8 +72,6 @@
   <?= self::_printFieldErrors("global", $params) ?>
   <button class="ui button primary" type="submit">Save</button>
   <button class="ui button" type="button" onclick="window.location.href='/'">Cancel</button>
-  <?= ($params["values"]["email_confirmed"]) ? "" : 
-  '<button class="ui button primary" type="button">Re-send activation link</button>' ?>
 </form>
 </div>
 <script src=/public/js/profile.js></script>

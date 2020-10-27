@@ -15,7 +15,6 @@ class Session
 {
 	public static $verbose = false;
 	public $userId = null;
-	public $emailConfirmed = false;
 	public $loggedIn = false;
 
 	public function __construct()
@@ -32,24 +31,23 @@ class Session
 
 	public function loadSession()
 	{
-		$this->userId = $_SESSION["logged_on_user"]["userid"] ?? "";
-		$this->emailConfirmed = $_SESSION["logged_on_user"]["email_confirmed"] ?? false;
+		$this->userId = $_SESSION["logged_on_user"]["userid"] ?? null;
+		if ($this->userId) {
+			$this->loggedIn = true;
+		}
 	}
 
-	public function setSession($userId, $emailConfirmed)
+	public function setSession($userId)
 	{
-		$this->userId = $userId;
-		$this->emailConfirmed = $emailConfirmed;
+		$this->userId = $userId;;
 		$this->loggedIn = true;
 		$_SESSION["logged_on_user"]["userid"] = $userId;
-		$_SESSION["logged_on_user"]["email_confirmed"] = $emailConfirmed;
 	}
 
 	public function logout()
 	{
 		$this->loggedIn = false;
 		$this->userId = null;
-		$this->emailConfirmed = false;
 		unset($_SESSION["logged_on_user"]);
 	}
 
@@ -57,7 +55,6 @@ class Session
 	{
 		$str = "Session(" . PHP_EOL;
 		$str .= "userId: " . $this->userId . PHP_EOL;
-		$str .= "emailConfirmed: " . $this->emailConfirmed . PHP_EOL;
 		$str .= "loggndIN: " . $this->loggedIn . PHP_EOL;
 		$str .= ")";
 		return $str;

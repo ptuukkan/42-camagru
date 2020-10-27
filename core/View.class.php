@@ -54,7 +54,7 @@ class View
 		echo str_replace("{{view}}", $view, $layout);
 	}
 
-	public static function renderMessage($layout, $message)
+	public static function renderMessage($layout, $type, $message)
 	{
 		ob_start();
 		require_once "views/layouts/" . $layout . ".php";

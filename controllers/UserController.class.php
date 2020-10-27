@@ -58,54 +58,97 @@ class UserController extends BaseController
 
 	public function handleLogin($params)
 	{
-		$user = null;
+		$user = new UserModel();
 		try {
-			$user = new UserModel();
 			$user = $user->login($params);
 		} catch (Exception $e) {
 			View::renderView("main", "login", [
-				"values" => $params, "errors" => ["global" => [$e->getMessage()]]
+				"values" => $params, "errors" => $user->getErrors()
 			]);
+			return;
 		}
-		if ($user) {
-			Application::$app->session->setSession($user->getId(), $user->getEmailConfirmed());
-			header("Location: /");
-		} else {
-			View::renderView("main", "login", [
-				"values" => $params, "errors" => ["global" => ["Login failed"]]
-			]);
-		}
+		Application::$app->session->setSession($user->getId());
+		header("Location: /");
 	}
 
 	public function handleSignup($params)
 	{
 		$user = new UserModel();
-		$user->setAttributes($params);
 		try {
-			$user->save();
+			$user->signUp($params);
 		} catch (Exception $e) {
 			View::renderView("main", "signup", [
-				"values" => $params, "errors" => $-user>getErrors()
+				"values" => $params, "errors" => $user->getErrors()
 			]);
+			return;
 		}
-		try {
-			$id = $user->save();
-		} catch (Exception $e) {
-			View::renderView("main", "signup", [
-				"values" => $params, "errors" => ["global" => [$e->getMessage()]]
-			]);
-		}
-		Application::$app->session->setSession($id, $user->getEmailConfirmed());
-		header("Location: /");
+		$this->_sendVerificationEmail($user);
+		View::renderView("main", "signup_success");
 	}
 
 	public function saveProfile($params)
 	{
-		try {
-			$user = UserModel::findOne(["id" => Application::$app->session->userId]);
-
-		} catch (Exception $e) {
-
+		if (!Application::$app->session->loggedIn) {
+			throw new Exception("Unauthorized", 401);
 		}
+		$user = new UserModel();
+		try {
+			$user->saveProfile($params);
+		} catch (Exception $e) {
+			View::renderView("main", "profile", [
+				"values" => $params, "errors" => $user->getErrors()
+			]);
+			return;
+		}
+		unset($params["password"]);
+		unset($params["password_confirm"]);
+		unset($params["new_password"]);
+		View::renderView("main", "profile", [
+			"values" => $params, "errors" => $user->getErrors()
+		]);
+	}
+
+	public function verifyEmail($params)
+	{
+		if (!isset($params["token"]) || strlen($params["token"]) !== 100 ||
+			!ctype_xdigit($params["token"])) {
+		 	throw new Exception("Bad request", 400);
+		}
+		$user = UserModel::findOne(["token" => $params["token"]]);
+		if ($user && !$user->isActive()) {
+			try {
+				$user->verifyEmail();
+				View::renderMessage("main", "error", "Email verified, you can now log in.");
+			} catch (Exception $e) {
+				throw new Exception("Internal server error", 500);
+			}
+		}
+
+	}
+
+	private function _sendVerificationEmail($user)
+	{
+		$token = $user->getToken();
+		$email = $user->getEmail();
+		$username = $user->getUsername();
+		$subject = 'Verify your email';
+		$message = "
+		<html>
+		<head>
+			<title>Camagru email verification</title>
+		</head>
+		<body>
+			<p>Please verify your email by clicking the link below</p>
+			<a href='localhost/verify?token=" . $token . "'>Verify Email</a>
+		</body>
+		</html>
+		";
+		$headers[] = 'MIME-Version: 1.0';
+		$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+		$headers[] = 'To: ' . $username . ' <' . $email . '>';
+		$headers[] = 'From: Camagru <no-reply@camagru.com>';
+
+		mail($email, $subject, $message, implode("\r\n", $headers));
+
 	}
 }

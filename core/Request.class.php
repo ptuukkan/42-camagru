@@ -23,8 +23,8 @@ class Request
 		$this->method = strtolower($_SERVER["REQUEST_METHOD"]);
 		$request_uri = strtolower(filter_var($_SERVER["REQUEST_URI"], FILTER_SANITIZE_URL));
 		$array = explode("?", $request_uri);
-		if ($this->method === "get" && isset($array[1])) {
-			$this->params = $array[1];
+		if ($this->method === "get") {
+			$this->params = $_GET;
 		} else if ($this->method === "post") {
 			$this->params = $_POST;
 		}

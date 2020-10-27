@@ -42,7 +42,7 @@ abstract class BaseModel
 		return $statement->fetchObject(static::class);
 	}
 
-	private function _insert()
+	protected function _insert()
 	{
 		$table = static::_tableName();
 		$properties = static::_propertiesInDb();
@@ -60,16 +60,25 @@ abstract class BaseModel
 			}
 		}
 		$statement->execute();
-		return Application::$app->db->lastInsertId();
 	}
 
-	public function save()
+	protected function _update($id, $properties)
 	{
-		if ($this->id) {
-			$this->_insert();
-		} else {
-			$this->_update();
+		$table = static::_tableName();
+		$valuePlaceholders = array_map(function($property) {
+			return "$property=:$property";
+		}, $properties);
+		$sql = "UPDATE $table SET " . implode(", ", $valuePlaceholders) . " WHERE id=:id";
+		$statement = Application::$app->db->prepare($sql);
+		foreach ($properties as $property) {
+			if (is_bool($this->{$property})) {
+				$statement->bindValue(":$property", $this->{$property}, PDO::PARAM_BOOL);
+			} else {
+				$statement->bindValue(":$property", $this->{$property});
+			}
 		}
+		$statement->bindValue(":id", $id, PDO::PARAM_INT);
+		$statement->execute();
 	}
 
 	public function __destruct()
