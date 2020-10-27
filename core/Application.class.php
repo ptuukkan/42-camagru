@@ -58,7 +58,10 @@ class Application
 			$this->_controller = $this->_router->route();
 			call_user_func([$this->_controller, $this->_controller->action], $this->_request->params);
 		} catch (Exception $e) {
-			View::renderMessage("main", $e->getCode() . "-" . $e->getMessage());
+			$message["header"] = $e->getCode();
+			$message["body"] = $e->getMessage();
+			http_response_code($e->getCode());
+			View::renderMessage("main", "error", $message);
 		}
 	}
 

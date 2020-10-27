@@ -22,9 +22,9 @@ class GalleryController extends BaseController
 
 	public function edit($params)
 	{
-		if (!Application::$app->session->loggedIn) {
-				throw new Exception("Unauthorized", 401);
-			}
-		View::renderMessage("main", "Edit Page");
+		// if (!Application::$app->session->loggedIn) {
+		// 		throw new Exception("Unauthorized", 401);
+		// }
+		View::renderView("main", "edit");
 	}
 }

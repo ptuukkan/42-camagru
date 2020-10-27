@@ -59,7 +59,9 @@ class View
 		ob_start();
 		require_once "views/layouts/" . $layout . ".php";
 		$layout = ob_get_clean();
-		$message = "<h2>$message</h2>";
+		ob_start();
+		require_once "views/message.php";
+		$message = ob_get_clean();
 		echo str_replace("{{view}}", $message, $layout);
 	}
 

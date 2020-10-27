@@ -2,7 +2,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signup_success.php                                 :+:      :+:    :+:   */
+/*   message.php                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,10 +12,9 @@
 /* ************************************************************************** */
 ?>
 
-<div class="ui success message">
+<div class="ui <?= $type ?> message">
   <div class="header">
-    Your user sign up was successful.
+    <?= $message["header"] ?>
   </div>
-  	<p>Before logging in, you need to confirm your email address by clicking on the email verification link we have sent you.</p>
-	<button class="ui button primary" type="button" onclick="window.location.href='/'">OK</button>
+  	<p><?= $message["body"] ?></p>
 </div>

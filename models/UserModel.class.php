@@ -142,6 +142,27 @@ class UserModel extends BaseModel
 		}
 	}
 
+	public static function verifyEmail($token)
+	{
+		try {
+			$user = static::findOne(["token" => $token]);
+		} catch (Exception $e) {
+			throw new Exception("Internal server error", 500);
+		}
+		if (!$user) {
+			throw new Exception("Bad request", 400);
+		}
+		if ($user->isActive()) {
+			return;
+		}
+		$user->active = true;
+		try {
+			$user->_update($user->id, ["active"]);
+		} catch (Exception $e) {
+			throw new Exception("Internal server error", 500);
+		}
+	}
+
 	public function setAttributes($params)
 	{
 		$this->email = $params["email"] ?? "";

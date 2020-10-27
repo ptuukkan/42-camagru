@@ -48,11 +48,11 @@ class UserController extends BaseController
 		try {
 			$user = UserModel::findOne(["id" => Application::$app->session->userId]);
 		} catch (Exception $e) {
+			$params["status"] = "error";
 			$params["errors"]["global"][] = $e->getMessage();
 		}
 		$params["values"]["email"] = $user->getEmail();
 		$params["values"]["username"] = $user->getUsername();
-		$params["values"]["email_confirmed"] = $user->getEmailConfirmed();
 		View::renderView("main", "profile", $params);
 	}
 
@@ -64,7 +64,7 @@ class UserController extends BaseController
 		} catch (Exception $e) {
 			View::renderView("main", "login", [
 				"values" => $params, "errors" => $user->getErrors()
-			]);
+			]);	$params["status"] = "success";
 			return;
 		}
 		Application::$app->session->setSession($user->getId());
@@ -83,7 +83,9 @@ class UserController extends BaseController
 			return;
 		}
 		$this->_sendVerificationEmail($user);
-		View::renderView("main", "signup_success");
+		$message["header"] = "Success";
+		$message["body"] = "Before logging in, please verify your email by clicking the link we have sent to you.";
+		View::renderMessage("main", "success", $message);
 	}
 
 	public function saveProfile($params)
@@ -96,7 +98,9 @@ class UserController extends BaseController
 			$user->saveProfile($params);
 		} catch (Exception $e) {
 			View::renderView("main", "profile", [
-				"values" => $params, "errors" => $user->getErrors()
+				"values" => $params, 
+				"errors" => $user->getErrors(),
+				"status" => "error"
 			]);
 			return;
 		}
@@ -104,7 +108,9 @@ class UserController extends BaseController
 		unset($params["password_confirm"]);
 		unset($params["new_password"]);
 		View::renderView("main", "profile", [
-			"values" => $params, "errors" => $user->getErrors()
+			"values" => $params,
+			"errors" => $user->getErrors(),
+			"status" => "success"
 		]);
 	}
 
@@ -114,16 +120,10 @@ class UserController extends BaseController
 			!ctype_xdigit($params["token"])) {
 		 	throw new Exception("Bad request", 400);
 		}
-		$user = UserModel::findOne(["token" => $params["token"]]);
-		if ($user && !$user->isActive()) {
-			try {
-				$user->verifyEmail();
-				View::renderMessage("main", "error", "Email verified, you can now log in.");
-			} catch (Exception $e) {
-				throw new Exception("Internal server error", 500);
-			}
-		}
-
+		UserModel::verifyEmail($params["token"]);
+		$message["header"] = "Success";
+		$message["body"] = "Email address successfully verified, you can now log in.";
+		View::renderMessage("main", "success", $message);
 	}
 
 	private function _sendVerificationEmail($user)
