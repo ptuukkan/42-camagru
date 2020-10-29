@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   edit.js                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: ptuukkan <ptuukkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/29 21:32:05 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/10/29 21:35:02 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ const setupWebCam = () => {
 	const canvas = document.querySelector("#canvas");
 	const takePhotoButton = document.querySelector("#takephoto");
 	const photo = document.querySelector("#photo");
+	const width = document.querySelector("#webcam-container").clientWidth;
 	let streaming = false;
 
 	console.log("adding canplay event listener");
