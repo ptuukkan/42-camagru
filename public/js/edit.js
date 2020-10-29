@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/29 20:53:01 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/10/29 21:32:05 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,14 @@ const webCamMode = () => {
 	console.log("webcam mode");
 	const video = document.querySelector("#video");
 	const webCamToggle = document.querySelector("#webcamtoggle");
+	const takePhotoButton = document.querySelector("#takephoto");
+	const uploadButton = document.querySelector("#uploadphoto");
+	const uploadIcon = document.querySelector("#uploadicon");
+
+	uploadButton.style.display = "none";
+	uploadIcon.style.display = "none";
+	video.style.display = "";
+	takePhotoButton.style.display = "";
 
 	console.log("getting user media");
 	navigator.mediaDevices.getUserMedia({ video: true, audio: false })
@@ -102,14 +110,14 @@ const setupUpload = () => {
 const uploadMode = () => {
 	console.log("upload mode");
 	const uploadIcon = document.querySelector("#uploadicon");
+	const uploadButton = document.querySelector("#uploadphoto");
 	const takePhotoButton = document.querySelector("#takephoto");
 	const video = document.querySelector("#video");
-	const uploadButton = document.querySelector("#uploadphoto");
 
-	uploadButton.style.display = "";
-	video.style.display = "none";
-	uploadIcon.style.display = "";
 	takePhotoButton.style.display = "none";
+	video.style.display = "none";
+	uploadButton.style.display = "";
+	uploadIcon.style.display = "";
 }
 
 document.querySelector("#webcamtoggle").addEventListener("click", (event) => {
