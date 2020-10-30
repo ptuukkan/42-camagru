@@ -25,7 +25,7 @@
 		<div class="image" id="webcam-container" style="text-align: center">
 			<video id="video">Video stream not available.</video>
       <i class="upload icon huge" style="margin: 50px; display: none" id="uploadicon"></i>
-      <img id="photo">
+      <img id="photo" style="display: none">
 		</div>
 		<div class="content" style="text-align: center">
 			<input type="file" hidden id="upload" />

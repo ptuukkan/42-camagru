@@ -3,19 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   edit.js                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptuukkan <ptuukkan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/29 21:35:02 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/10/30 16:20:17 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-const clearPhoto = (canvas, photo) => {
+const clearPhoto = () => {
+	const canvas = document.querySelector("#canvas");
 	const context = canvas.getContext("2d");
+	const photo = document.querySelector("#photo");
+
 	context.fillStyle = "#AAA";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	const data = canvas.toDataURL('image/png');
 	photo.setAttribute('src', data);
+	photo.style.display = "none";
 }
 
 const setupWebCam = () => {
@@ -52,8 +56,10 @@ const setupWebCam = () => {
 		  context.drawImage(video, 0, 0, width, height);
 		  const data = canvas.toDataURL('image/png');
 		  photo.setAttribute('src', data);
+		  photo.style.display = "";
+		  video.style.display = "none";
 		} else {
-		  clearPhoto(canvas, photo);
+		  clearPhoto();
 		}
 		event.preventDefault();
 	})
@@ -83,8 +89,7 @@ const webCamMode = () => {
 			webCamToggle.disabled = true;
 			return uploadMode();
 		});
-
-	//clearPhoto(canvas, photo);
+	clearPhoto();
 }
 
 const setupUpload = () => {
@@ -92,6 +97,7 @@ const setupUpload = () => {
 	const uploadButton = document.querySelector("#uploadphoto");
 	const uploadIcon = document.querySelector("#uploadicon");
 	const saveButton = document.querySelector("#savephoto");
+	const photo = document.querySelector("#photo");
 
 	uploadButton.addEventListener("click", (event) => {
 		document.querySelector("#upload").click();
@@ -100,6 +106,7 @@ const setupUpload = () => {
 	uploadInput.addEventListener("change", (event) => {
 		if (event.target.files && event.target.files[0]) {
 			photo.setAttribute('src', URL.createObjectURL(event.target.files[0]));
+			photo.style.display = "";
 			uploadIcon.style.display = "none";
 			if (saveButton.classList.contains("disabled")) {
 				saveButton.classList.remove("disabled");
@@ -119,6 +126,7 @@ const uploadMode = () => {
 	video.style.display = "none";
 	uploadButton.style.display = "";
 	uploadIcon.style.display = "";
+	clearPhoto();
 }
 
 document.querySelector("#webcamtoggle").addEventListener("click", (event) => {
