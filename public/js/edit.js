@@ -3,12 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   edit.js                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: ptuukkan <ptuukkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/10/30 16:20:17 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/10/30 16:59:16 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+const sleep = (time) => {
+	return new Promise((resolve) => setTimeout(resolve, time));
+}
 
 const clearPhoto = () => {
 	const canvas = document.querySelector("#canvas");
@@ -89,6 +93,7 @@ const webCamMode = () => {
 			webCamToggle.disabled = true;
 			return uploadMode();
 		});
+	
 	clearPhoto();
 }
 
@@ -124,6 +129,7 @@ const uploadMode = () => {
 
 	takePhotoButton.style.display = "none";
 	video.style.display = "none";
+	video.srcObject = null;
 	uploadButton.style.display = "";
 	uploadIcon.style.display = "";
 	clearPhoto();
