@@ -35,6 +35,18 @@ function create()
 		token VARCHAR(255) NOT NULL
 	);";
 	$pdo->prepare($sql)->execute();
+	$sql = "CREATE TABLE IF NOT EXISTS $DB_DBNAME.images
+	(
+		id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
+		img_name VARCHAR(255) UNIQUE NOT NULL,
+		user_id INT NOT NULL,
+		img_type VARCHAR(255) NOT NULL,
+		likes INT default 0,
+		date_added INT NOT NULL
+	);";
+	$pdo->prepare($sql)->execute();
+
+
 	echo "DB Schema created" . PHP_EOL;
 
 }

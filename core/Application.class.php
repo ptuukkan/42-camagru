@@ -32,8 +32,8 @@ class Application
 		$this->_request = new Request();
 		$this->_router = new Router($this->_request);
 
-		$this->_router->get("/", [GalleryController::class, "index"]);
-		$this->_router->get("/edit", [GalleryController::class, "edit"]);
+		$this->_router->get("/", [ImageController::class, "index"]);
+		$this->_router->get("/edit", [ImageController::class, "edit"]);
 		$this->_router->get("/login", [UserController::class, "login"]);
 		$this->_router->get("/logout", [UserController::class, "logout"]);
 		$this->_router->get("/signup", [UserController::class, "signup"]);
@@ -42,7 +42,7 @@ class Application
 		$this->_router->post("/login", [UserController::class, "handleLogin"]);
 		$this->_router->post("/signup", [UserController::class, "handleSignup"]);
 		$this->_router->post("/profile", [UserController::class, "saveProfile"]);
-		$this->_router->post("/edit/submit", [GalleryController::class, "savePhoto"]);
+		$this->_router->post("/edit/submit", [ImageController::class, "savePhoto"]);
 
 		$this->session = new Session();
 		self::$app = $this;

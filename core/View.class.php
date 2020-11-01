@@ -43,6 +43,14 @@ class View
 		return $string;
 	}
 
+	private static function _printImage($image)
+	{
+		ob_start();
+		require "views/image.php";
+		$imageHtml = ob_get_clean();
+		echo $imageHtml;
+	}
+
 	public static function renderView($layout, $view, $params = [])
 	{
 		ob_start();

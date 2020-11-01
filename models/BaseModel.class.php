@@ -26,6 +26,15 @@ abstract class BaseModel
 
 	protected abstract function _propertiesInDb();
 
+	public static function findAll()
+	{
+		$table = static::_tableName();
+		$sql = "SELECT * FROM " . $table;
+		$statement = Application::$app->db->prepare($sql);
+		$statement->execute();
+		return $statement->fetchAll(PDO::FETCH_CLASS, static::class);
+	}
+
 	public static function findOne($filter)
 	{
 		$table = static::_tableName();
@@ -55,11 +64,14 @@ abstract class BaseModel
 		foreach ($properties as $property) {
 			if (is_bool($this->{$property})) {
 				$statement->bindValue(":$property", $this->{$property}, PDO::PARAM_BOOL);
+			} else if (is_int($this->{$property})) {
+				$statement->bindValue(":$property", $this->{$property}, PDO::PARAM_INT);
 			} else {
 				$statement->bindValue(":$property", $this->{$property});
 			}
 		}
 		$statement->execute();
+		return Application::$app->db->lastInsertId();
 	}
 
 	protected function _update($id, $properties)
@@ -73,10 +85,21 @@ abstract class BaseModel
 		foreach ($properties as $property) {
 			if (is_bool($this->{$property})) {
 				$statement->bindValue(":$property", $this->{$property}, PDO::PARAM_BOOL);
+			} else if (is_int($this->{$property})) {
+				$statement->bindValue(":$property", $this->{$property}, PDO::PARAM_INT);
 			} else {
 				$statement->bindValue(":$property", $this->{$property});
 			}
 		}
+		$statement->bindValue(":id", $id, PDO::PARAM_INT);
+		$statement->execute();
+	}
+
+	protected function _delete($id)
+	{
+		$table = static::_tableName();
+		$sql = "DELETE FROM $table WHERE id=:id";
+		$statement = Application::$app->db->prepare($sql);
 		$statement->bindValue(":id", $id, PDO::PARAM_INT);
 		$statement->execute();
 	}

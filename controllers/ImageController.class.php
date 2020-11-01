@@ -2,7 +2,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Gallery.class.php                                  :+:      :+:    :+:   */
+/*   ImageController.class.php                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,12 +12,17 @@
 /* ************************************************************************** */
 
 require_once "BaseController.class.php";
+require_once "models/ImageModel.class.php";
 
-class GalleryController extends BaseController
+class ImageController extends BaseController
 {
 	public function index($params)
 	{
-		View::renderView("main", "gallery");
+		$images = ImageModel::findAll();
+		usort($images, function($first, $second) {
+			return $first->getDate() < $second->getDate();
+		});
+		View::renderView("main", "gallery", $images);
 	}
 
 	public function edit($params)
@@ -30,9 +35,7 @@ class GalleryController extends BaseController
 
 	public function savePhoto($params)
 	{
-		$filename = uniqid("img_");
-		$img = explode(',', $params["data"])[1];
-		file_put_contents('public/img/uploads/' . $filename . '.png', base64_decode($img));
-		echo json_encode(["status" => "ok"]);
+		$image = new ImageModel();
+		$image->newImage($params);
 	}
 }
