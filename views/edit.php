@@ -59,5 +59,5 @@
 </div>
 <canvas id="canvas" style="display: none">
 </canvas>
-<script src=/public/js/edit.js></script>
+<script type="module" src=/public/js/edit.js></script>
 

@@ -42,6 +42,7 @@ class Application
 		$this->_router->post("/login", [UserController::class, "handleLogin"]);
 		$this->_router->post("/signup", [UserController::class, "handleSignup"]);
 		$this->_router->post("/profile", [UserController::class, "saveProfile"]);
+		$this->_router->post("/edit/submit", [GalleryController::class, "savePhoto"]);
 
 		$this->session = new Session();
 		self::$app = $this;

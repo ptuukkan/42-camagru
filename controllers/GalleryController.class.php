@@ -27,4 +27,9 @@ class GalleryController extends BaseController
 		// }
 		View::renderView("main", "edit");
 	}
+
+	public function savePhoto($params)
+	{
+		echo json_encode($_POST["data"]);
+	}
 }
