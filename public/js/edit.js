@@ -6,11 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2020/11/01 16:22:02 by ptuukkan         ###   ########.fr       */
-=======
-/*   Updated: 2020/11/01 15:13:55 by ptuukkan         ###   ########.fr       */
->>>>>>> b9f291dec7bd641c6d5a865ddd4fa3ebf7613db0
+/*   Updated: 2020/11/01 16:42:22 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +25,7 @@ const uploadInput = document.querySelector("#upload");
 const saveButton = document.querySelector("#savephoto");
 let blobImage;
 let streaming = false;
-<<<<<<< HEAD
-=======
 let height;
->>>>>>> b9f291dec7bd641c6d5a865ddd4fa3ebf7613db0
 let mode;
 
 const clearPhoto = () => {
@@ -164,7 +157,6 @@ saveButton.addEventListener("click", (event) => {
 	getImageData().then(data => {
 		const formData = new FormData();
 		formData.append("data", data);
-		console.log(data);
 		fetch('/edit/submit', {
 			method: 'POST',
 			body: formData,

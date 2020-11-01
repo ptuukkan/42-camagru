@@ -30,7 +30,9 @@ class GalleryController extends BaseController
 
 	public function savePhoto($params)
 	{
+		$filename = uniqid("img_");
 		$img = explode(',', $params["data"])[1];
-		file_put_contents('public/img/uploads/img.png', base64_decode($img));
+		file_put_contents('public/img/uploads/' . $filename . '.png', base64_decode($img));
+		echo json_encode(["status" => "ok"]);
 	}
 }
