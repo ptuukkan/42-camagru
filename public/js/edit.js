@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/01 14:52:22 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/01 16:22:02 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ const uploadInput = document.querySelector("#upload");
 const saveButton = document.querySelector("#savephoto");
 let blobImage;
 let streaming = false;
+let mode;
 
 const clearPhoto = () => {
 	context.fillStyle = "#AAA";
@@ -71,7 +72,7 @@ const setupWebCam = () => {
 
 const webCamMode = () => {
 	console.log("webcam mode");
-
+	mode = 1;
 	uploadButton.style.display = "none";
 	uploadIcon.style.display = "none";
 	video.style.display = "";
@@ -112,7 +113,7 @@ const setupUpload = () => {
 
 const uploadMode = () => {
 	console.log("upload mode");
-
+	mode = 2;
 	takePhotoButton.style.display = "none";
 	video.style.display = "none";
 	video.srcObject = null;
@@ -129,28 +130,35 @@ webCamToggle.addEventListener("click", (event) => {
 	}
 });
 
-saveButton.addEventListener("click", (event) => {
-	let blobImageData;
-	fetch(blobImage).then(response => response.blob()).then(blob => {
-		blobImageData = blob;
+const toBase64 = (file) => {
+	const reader = new FileReader();
+	reader.readAsDataURL(file);
+	return new Promise(resolve => {
+		reader.onloadend = () => {
+			resolve(reader.result);
+		}
 	})
+}
 
-	const formData = new FormData();
-	formData.append('data', blobImageData);
-	console.dir(formData);
+const getImageData = async () => {
+	if (mode == 1) {
+		return photo.getAttribute("src");
+	}
+	let data = await toBase64(uploadInput.files[0]);
+	return data;
+}
 
-	// const files = uploadInput.files;
-	// const formData = new FormData();
-
-	// for (let i = 0; i < files.length; i++) {
-	// 	formData.append('files[]', files[i]);
-	// }
-	// formData.append('file', uploadInput.files[0]);
-	fetch('/edit/submit', {
-		method: 'POST',
-		body: formData,
-	}).then((response) => (response.json()).then(data => console.log(data)));
-})
+saveButton.addEventListener("click", (event) => {
+	getImageData().then(data => {
+		const formData = new FormData();
+		formData.append("data", data);
+		console.log(data);
+		fetch('/edit/submit', {
+			method: 'POST',
+			body: formData,
+		}).then((response) => (response.json()).then(r => console.log(r)));
+	})
+});
 
 
 setupUpload();
