@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/01 14:52:22 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/01 15:13:55 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ const uploadInput = document.querySelector("#upload");
 const saveButton = document.querySelector("#savephoto");
 let blobImage;
 let streaming = false;
+let height;
+let mode;
 
 const clearPhoto = () => {
 	context.fillStyle = "#AAA";
@@ -65,11 +67,14 @@ const setupWebCam = () => {
 		} else {
 		  clearPhoto();
 		}
-		event.preventDefault();
+		if (saveButton.classList.contains("disabled")) {
+			saveButton.classList.remove("disabled");
+		}
 	})
 }
 
 const webCamMode = () => {
+	mode = 1;
 	console.log("webcam mode");
 
 	uploadButton.style.display = "none";
@@ -111,6 +116,7 @@ const setupUpload = () => {
 }
 
 const uploadMode = () => {
+	mode = 2;
 	console.log("upload mode");
 
 	takePhotoButton.style.display = "none";
@@ -130,14 +136,9 @@ webCamToggle.addEventListener("click", (event) => {
 });
 
 saveButton.addEventListener("click", (event) => {
-	let blobImageData;
-	fetch(blobImage).then(response => response.blob()).then(blob => {
-		blobImageData = blob;
-	})
 
 	const formData = new FormData();
-	formData.append('data', blobImageData);
-	console.dir(formData);
+	formData.append('data', photo.getAttribute("src"));
 
 	// const files = uploadInput.files;
 	// const formData = new FormData();
