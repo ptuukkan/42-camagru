@@ -26,29 +26,54 @@ abstract class BaseModel
 
 	protected abstract function _propertiesInDb();
 
-	public static function findAll()
+	public static function findMany($fields, $filter = [])
 	{
 		$table = static::_tableName();
-		$sql = "SELECT * FROM " . $table;
-		$statement = Application::$app->db->prepare($sql);
-		$statement->execute();
-		return $statement->fetchAll(PDO::FETCH_CLASS, static::class);
-	}
 
-	public static function findOne($filter)
-	{
-		$table = static::_tableName();
-		$fields = array_keys($filter);
-		$fields = array_map(function($field) {
-			return "$field = :$field";
-		}, $fields);
-		$sql = "SELECT * FROM " . $table . " WHERE " . implode(" AND ", $fields);
+		$sql = "SELECT " . implode(", ", $fields) . " FROM $table";
+		if (!empty($filter)) {
+			$filterPlaceholders = array_map(function($field) {
+				return "$field = :$field";
+			}, array_keys($filter));
+			$sql .= " WHERE " . implode(" AND ", $filterPlaceholders);
+		}
 		$statement = Application::$app->db->prepare($sql);
-		foreach ($filter as $field => $value) {
-			$statement->bindValue(":$field", $value);
+		if (!empty($filter)) {
+			foreach ($filter as $field => $value) {
+				if (is_bool($value)) {
+					$statement->bindValue(":$field", $value, PDO::PARAM_BOOL);
+				} else if (is_int($value)) {
+					$statement->bindValue(":$field", $value, PDO::PARAM_INT);
+				} else {
+					$statement->bindValue(":$field", $value);
+				}
+			}
 		}
 		$statement->execute();
-		return $statement->fetchObject(static::class);
+		return $statement->fetchAll();
+	}
+
+	public static function findOne($fields, $filter)
+	{
+		$table = static::_tableName();
+		$filterPlaceholders = array_map(function($field) {
+			return "$field = :$field";
+		}, array_keys($filter));
+		$sql = "SELECT " . implode(", ", $fields) . " FROM " . $table;
+		$sql .= " WHERE " . implode(" AND ", $filterPlaceholders);
+		$statement = Application::$app->db->prepare($sql);
+		foreach ($filter as $field => $value) {
+			if (is_bool($value)) {
+				$statement->bindValue(":$field", $value, PDO::PARAM_BOOL);
+			} else if (is_int($value)) {
+				$statement->bindValue(":$field", $value, PDO::PARAM_INT);
+			} else {
+				$statement->bindValue(":$field", $value);
+			}
+		}
+		$statement->execute();
+		return $statement->fetch();
+		// return $statement->fetchObject(static::class);
 	}
 
 	protected function _insert()

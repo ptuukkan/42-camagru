@@ -18,11 +18,12 @@ class ImageController extends BaseController
 {
 	public function index($params)
 	{
-		$images = ImageModel::findAll();
+		$images = ImageModel::getImages();
 		usort($images, function($first, $second) {
-			return $first->getDate() < $second->getDate();
+			return $first["img_date"] < $second["img_date"];
 		});
-		View::renderView("main", "gallery", $images);
+		//print_r($images);
+		 View::renderView("main", "gallery", $images);
 	}
 
 	public function edit($params)

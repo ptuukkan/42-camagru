@@ -21,7 +21,7 @@ class UserModel extends BaseModel
 	protected $username = "";
 	protected $password = "";
 	private $_passwordConfirm = "";
-	protected $active = false;
+	protected $active = true;
 	protected $token = "";
 
 	public function getId()
@@ -70,9 +70,10 @@ class UserModel extends BaseModel
 		$this->_validateUsername(false);
 		$this->_validatePassword();
 		if (empty($this->_errors)) {
-			$user = self::findOne(["username" => $this->username]);
-			if ($user && password_verify($this->password, $user->password)) {
-				if ($user->isActive()) {
+			$user = self::findOne(["password", "active", "id"],
+				["username" => $this->username]);
+			if ($user && password_verify($this->password, $user["password"])) {
+				if ($user["active"]) {
 					return $user;
 				} else {
 					$this->_setError("global", "User email is not confirmed");
@@ -106,15 +107,16 @@ class UserModel extends BaseModel
 	public function saveProfile($params)
 	{
 		$this->setAttributes($params);
-		$user = UserModel::findOne(["id" => Application::$app->session->userId]);
-		if (!password_verify($params["password"], $user->password)) {
+		$user = UserModel::findOne(["password, username, email"],
+			["id" => Application::$app->session->userId]);
+		if (!password_verify($params["password"], $user["password"])) {
 			$this->_setError("password", "Current password is invalid");
 			throw new Exception();
 		}
-		if ($user->username !== $this->username) {
+		if ($user["username"] !== $this->username) {
 			$this->_validateUsername();
 		}
-		if ($user->email !== $this->email) {
+		if ($user["email"] !== $this->email) {
 			$this->_validateEmail();
 		}
 		if (!empty($this->_errors)) {
@@ -145,19 +147,19 @@ class UserModel extends BaseModel
 	public static function verifyEmail($token)
 	{
 		try {
-			$user = static::findOne(["token" => $token]);
+			$user = static::findOne(["active", "id"], ["token" => $token]);
 		} catch (Exception $e) {
 			throw new Exception("Internal server error", 500);
 		}
 		if (!$user) {
 			throw new Exception("Bad request", 400);
 		}
-		if ($user->isActive()) {
+		if ($user["active"]) {
 			return;
 		}
-		$user->active = true;
+		$user["active"] = true;
 		try {
-			$user->_update($user->id, ["active"]);
+			$user->_update($user["id"], ["active"]);
 		} catch (Exception $e) {
 			throw new Exception("Internal server error", 500);
 		}
@@ -182,7 +184,7 @@ class UserModel extends BaseModel
 		if (!$valid) {
 			$this->_setError("email", "Email address is not valid");
 		}
-		if ($valid && self::findOne(["email" => $this->email])) {
+		if ($valid && self::findOne(["id"], ["email" => $this->email])) {
 			$this->_setError("email", "Email address is already in use");
 		}
 	}
@@ -198,7 +200,7 @@ class UserModel extends BaseModel
 		if (!$valid) {
 			$this->_setError("username", "Username must contain only alphanumeric characters");
 		}
-		if ($unique && $valid && self::findOne(["username" => $this->username])) {
+		if ($unique && $valid && self::findOne(["id"], ["username" => $this->username])) {
 			$this->_setError("username", "Username is already in use");
 		}
 

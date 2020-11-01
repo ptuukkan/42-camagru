@@ -47,8 +47,19 @@ class View
 	{
 		ob_start();
 		require "views/image.php";
-		$imageHtml = ob_get_clean();
-		echo $imageHtml;
+		$html = ob_get_clean();
+		echo $html;
+	}
+
+	private static function _printComments($comments)
+	{
+		if (empty($comments)) {
+			return;
+		}
+		ob_start();
+		require "views/comments.php";
+		$html = ob_get_clean();
+		echo $html;
 	}
 
 	public static function renderView($layout, $view, $params = [])

@@ -46,13 +46,14 @@ class UserController extends BaseController
 		$user = new UserModel();
 		$params = [];
 		try {
-			$user = UserModel::findOne(["id" => Application::$app->session->userId]);
+			$user = UserModel::findOne(["email", "username"], 
+				["id" => Application::$app->session->userId]);
 		} catch (Exception $e) {
 			$params["status"] = "error";
 			$params["errors"]["global"][] = $e->getMessage();
 		}
-		$params["values"]["email"] = $user->getEmail();
-		$params["values"]["username"] = $user->getUsername();
+		$params["values"]["email"] = $user["email"];
+		$params["values"]["username"] = $user["username"];
 		View::renderView("main", "profile", $params);
 	}
 
@@ -67,7 +68,7 @@ class UserController extends BaseController
 			]);	$params["status"] = "success";
 			return;
 		}
-		Application::$app->session->setSession($user->getId());
+		Application::$app->session->setSession($user["id"]);
 		header("Location: /");
 	}
 

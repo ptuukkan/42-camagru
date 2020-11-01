@@ -14,76 +14,29 @@
 
 <div class="ui fluid card ten wide column centered">
 	<div class="content">
-		<div class="right floated meta"><?= date("Y-m-d H:i:s", $image->getDate())  ?></div>
-			<img class="ui avatar image" src="/public/img/user.png"> Elliot
+		<div class="right floated meta"><?= date("Y-m-d H:i:s", $image["img_date"]) ?></div>
+			<img class="ui avatar image" src="/public/img/user.png"> <?= $image["user"]["username"] ?>
 	</div>
 	<div class="image">
-		<img src="<?= $image->getFilename() ?>">
+		<img src="<?= $image["img_path"] ?>">
 	</div>
 	<div class="content">
 		<span class="right floated">
 			<i class="heart outline like icon like-button"></i>
-			<span class="num-of-likes">17</span> likes
+			<span class="num-of-likes"><?= $image["likes"] ?></span> likes
 		</span>
 		<i class="comment icon"></i>
-		3 comments
+		<?= count($image["comments"]) ?> comments
 	</div>
 	<div class="extra content">
-		<div class="ui large transparent left icon input">
+		<div class="ui large transparent left icon input" style="width: 100%">
 			<i class="comment outline icon"></i>
-			<input type="text" placeholder="Add Comment...">
+			<input type="text" placeholder="Add Comment..." class="comment-input">
 		</div>
 	</div>
-	<div class="ui comments">
-		<div class="comment">
-			<a class="avatar">
-				<img src="/public/img/user.png">
-			</a>
-			<div class="content">
-				<a class="author">Christian Rocha</a>
-				<div class="metadata">
-					<span class="date">20 minutes ago</span>
-				</div>
-				<div class="text">
-					I'm very interested in this motherboard. Do you know if it'd work in a Intel LGA775 CPU socket?
-				</div>
-			</div>
-		</div>
-		<div class="collapsed comments">
-			<div class="comment">
-				<a class="avatar">
-					<img src="/public/img/user.png">
-				</a>
-				<div class="content">
-					<a class="author">Elliot Fu</a>
-					<div class="metadata">
-						<span class="date">1 day ago</span>
-					</div>
-					<div class="text">
-						No, it wont
-					</div>
-				</div>
-			</div>
-			<div class="comments">
-				<div class="comment">
-					<a class="avatar">
-						<img src="/public/img/user.png">
-					</a>
-					<div class="content">
-						<a class="author">Jenny Hess</a>
-						<div class="metadata">
-							<span class="date">2 day ago</span>
-						</div>
-						<div class="text">
-							Maybe it would.
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	<?= self::_printComments($image["comments"]) ?>
 	<div class="extra content">
-		<a class="show-comments">
+		<a class="show-comments" <?= (count($image["comments"]) > 0) ? '' : 'style="display: none"' ?>>
 			View all comments
 		</a>
 	</div>

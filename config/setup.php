@@ -41,8 +41,18 @@ function create()
 		img_name VARCHAR(255) UNIQUE NOT NULL,
 		user_id INT NOT NULL,
 		img_type VARCHAR(255) NOT NULL,
+		img_path VARCHAR(255) NOT NULL,
 		likes INT default 0,
-		date_added INT NOT NULL
+		img_date INT NOT NULL
+	);";
+	$pdo->prepare($sql)->execute();
+	$sql = "CREATE TABLE IF NOT EXISTS $DB_DBNAME.comments
+	(
+		id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
+		comment_date VARCHAR(255) NOT NULL,
+		comment VARCHAR(255) NOT NULL,
+		img_id INT NOT NULL,
+		user_id INT NOT NULL
 	);";
 	$pdo->prepare($sql)->execute();
 

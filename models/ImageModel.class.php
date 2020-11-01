@@ -12,6 +12,8 @@
 /* ************************************************************************** */
 
 require_once "BaseModel.class.php";
+require_once "UserModel.class.php";
+require_once "CommentModel.class.php";
 
 class ImageModel extends BaseModel
 {
@@ -19,8 +21,9 @@ class ImageModel extends BaseModel
 	protected $user_id;
 	protected $img_type;
 	protected $img_name;
+	protected $img_path;
 	protected $likes = 0;
-	protected $date_added;
+	protected $img_date;
 
 	public function getDate()
 	{
@@ -38,7 +41,7 @@ class ImageModel extends BaseModel
 	}
 	protected function _propertiesInDb()
 	{
-		return ["user_id", "img_type", "img_name", "likes", "date_added"];
+		return ["user_id", "img_type", "img_name", "img_path", "likes", "img_date"];
 	}
 
 	private function _validateBase64($params)
@@ -81,8 +84,9 @@ class ImageModel extends BaseModel
 		}
 		$this->img_name = uniqid("img_");
 		$this->img_type = $imgData["type"];
+		$this->img_path = '/public/img/uploads/' . $this->img_name . '.' . $this->img_type;
 		$this->user_id = Application::$app->session->userId;
-		$this->date_added = time();
+		$this->img_date = time();
 		try {
 			$this->id = $this->_insert();
 			$this->_saveImage($imgData);
@@ -93,5 +97,24 @@ class ImageModel extends BaseModel
 			http_response_code(500);
 			echo json_encode(["error" => $e->getMessage()]);
 		}
+	}
+
+	public static function getImages()
+	{
+		$fields = ["id", "img_path", "img_date", "user_id", "likes"];
+		$images = self::findMany($fields);
+		$size = count($images);
+		for ($i = 0; $i < $size; $i++) {
+			$images[$i]["user"] = UserModel::findOne(["username"],
+				["id" => $images[$i]["user_id"]]);
+			$images[$i]["comments"] = CommentModel::findMany(["comment_date", "comment", "user_id"],
+				["img_id" => $images[$i]["id"]]);
+			$comments_size = count($images[$i]["comments"]);
+			for ($n = 0; $n < $comments_size; $n++) {
+				$images[$i]["comments"][$n]["user"] = UserModel::findOne(["username"],
+					["id" => $images[$i]["comments"][$n]["user_id"]]);
+			}
+		}
+		return $images;
 	}
 }
