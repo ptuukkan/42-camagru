@@ -35,6 +35,11 @@ class ImageModel extends BaseModel
 		return '/public/img/uploads/' . $this->img_name . '.' . $this->img_type;
 	}
 
+	public function getLikes()
+	{
+		return $this->likes;
+	}
+
 	protected function _tableName()
 	{
 		return "images";
@@ -88,7 +93,7 @@ class ImageModel extends BaseModel
 		$this->user_id = Application::$app->session->userId;
 		$this->img_date = time();
 		try {
-			$this->id = $this->_insert();
+			$this->id = $this->insert();
 			$this->_saveImage($imgData);
 		} catch (Exception $e) {
 			if (!$e instanceof PDOException) {
@@ -105,8 +110,8 @@ class ImageModel extends BaseModel
 		$images = self::findMany($fields);
 		$size = count($images);
 		for ($i = 0; $i < $size; $i++) {
-			$images[$i]["user"] = UserModel::findOne(["username"],
-				["id" => $images[$i]["user_id"]]);
+			$images[$i]["user"] = UserModel::findOne(["id" => $images[$i]["user_id"]],
+				["username"]);
 			$comments = CommentModel::findMany(["comment_date", "comment", "user_id"],
 				["img_id" => $images[$i]["id"]]);
 			usort($comments, function($first, $second) {
@@ -115,14 +120,14 @@ class ImageModel extends BaseModel
 			$images[$i]["comments"] = $comments;
 			$comments_size = count($images[$i]["comments"]);
 			for ($n = 0; $n < $comments_size; $n++) {
-				$images[$i]["comments"][$n]["user"] = UserModel::findOne(["username"],
-					["id" => $images[$i]["comments"][$n]["user_id"]]);
+				$images[$i]["comments"][$n]["user"] = UserModel::findOne(["id" => 
+					$images[$i]["comments"][$n]["user_id"]], ["username"]);
 			}
 		}
 		return $images;
 	}
 
-	public static function addLike($image)
+	public function addLike()
 	{
 		$this->likes = $this->likes + 1;
 		$this->_update($this->id, ["likes"]);

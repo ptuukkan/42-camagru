@@ -26,7 +26,7 @@
 			<span class="num-of-likes"><?= $image["likes"] ?></span> likes
 		</span>
 		<i class="comment icon"></i>
-		<?= count($image["comments"]) ?> comments
+		<span class="num-of-comments"><?= count($image["comments"]) ?></span> comments
 	</div>
 	<div class="extra content">
 		<div class="ui large transparent left icon input" style="width: 100%">

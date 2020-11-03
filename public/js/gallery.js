@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/11 21:10:35 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/03 20:09:25 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/03 22:59:29 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ const addLike = (image) => {
 		if (response.ok) {
 			response.json().then(likes => {
 				const likesText = image.querySelector(".num-of-likes");
-				likesText.textContent = String(likes + 1);
+				likesText.textContent = String(likes.likes + 1);
 			});
 		} else {
 			response.json().then(r => console.log(r));
@@ -71,7 +71,7 @@ const checkCommentOver = (target) => {
 			parent.appendChild(createCommentOverDiv());
 		}
 		commentOver = parent.querySelector(".comment-over");
-		commentOver.textContent = `${event.target.value.length}/127`;
+		commentOver.textContent = `${target.value.length}/127`;
 	} else {
 		if (commentOver) {
 			commentOver.parentElement.remove();
@@ -112,6 +112,9 @@ const uploadComment = async (comment, image) => {
 			response.json().then(newComment => {
 				const comments = image.querySelector(".ui.comments");
 				comments.prepend(createComment(newComment));
+				const numOfComments = image.querySelector(".num-of-comments");
+				const i = Number(numOfComments.textContent);
+				numOfComments.textContent = String(i + 1);
 			});
 		}
 	});

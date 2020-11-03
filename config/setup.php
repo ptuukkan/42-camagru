@@ -55,6 +55,13 @@ function create()
 		user_id INT NOT NULL
 	);";
 	$pdo->prepare($sql)->execute();
+	$sql = "CREATE TABLE IF NOT EXISTS $DB_DBNAME.likes
+	(
+		id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
+		img_id INT NOT NULL,
+		user_id INT NOT NULL
+	);";
+	$pdo->prepare($sql)->execute();
 
 
 	echo "DB Schema created" . PHP_EOL;

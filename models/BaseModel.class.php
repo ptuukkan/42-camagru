@@ -53,13 +53,18 @@ abstract class BaseModel
 		return $statement->fetchAll();
 	}
 
-	public static function findOne($fields, $filter)
+	public static function findOne($filter, $fields = [])
 	{
 		$table = static::_tableName();
 		$filterPlaceholders = array_map(function($field) {
 			return "$field = :$field";
 		}, array_keys($filter));
-		$sql = "SELECT " . implode(", ", $fields) . " FROM " . $table;
+		if (empty($fields)) {
+			$selectFilter = "*";
+		} else {
+			$selectFilter = implode(", ", $fields);
+		}
+		$sql = "SELECT " . $selectFilter . " FROM " . $table;
 		$sql .= " WHERE " . implode(" AND ", $filterPlaceholders);
 		$statement = Application::$app->db->prepare($sql);
 		foreach ($filter as $field => $value) {
@@ -72,11 +77,13 @@ abstract class BaseModel
 			}
 		}
 		$statement->execute();
+		if (empty($fields)) {
+			return $statement->fetchObject(static::class);
+		}
 		return $statement->fetch();
-		// return $statement->fetchObject(static::class);
 	}
 
-	protected function _insert()
+	public function insert()
 	{
 		$table = static::_tableName();
 		$properties = static::_propertiesInDb();

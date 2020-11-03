@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/01 17:25:36 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/03 22:48:02 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ const setupWebCam = () => {
 }
 
 const webCamMode = () => {
-	mode = 1;
 	console.log("webcam mode");
 	mode = 1;
 	uploadButton.style.display = "none";
@@ -160,7 +159,11 @@ saveButton.addEventListener("click", (event) => {
 		fetch('/edit/submit', {
 			method: 'POST',
 			body: formData,
-		}).then((response) => (response.json()).then(r => console.log(r)));
+		}).then((response) => {
+			// if (!response.ok) {
+				response.json().then(r => console.log(r))
+			// }
+		});
 	})
 });
 

@@ -13,6 +13,7 @@
 
 require_once "BaseController.class.php";
 require_once "models/ImageModel.class.php";
+require_once "models/LikeModel.class.php";
 
 class ImageController extends BaseController
 {
@@ -56,7 +57,7 @@ class ImageController extends BaseController
 					"comment_date" => CommentModel::timeToString($comment->getDate()),
 					"comment" => $comment->getComment(),
 					"img_id" => $comment->getImgId(),
-					"user" => UserModel::findOne(["username"], ["id" => $comment->getUserId()])
+					"user" => UserModel::findOne(["id" => $comment->getUserId()], ["username"])
 				]);
 			} catch (Exception $e) {
 				http_response_code(500);
@@ -80,15 +81,25 @@ class ImageController extends BaseController
 			echo json_encode(["error" => "Bad request"]);
 			return;
 		}
+		$image;
 		try {
+			if (LikeModel::findOne([
+				"user_id" => Application::$app->session->userId,
+				"img_id" => $params["img_id"]
+			])) {
+				http_response_code(400);
+				echo json_encode(["error" => "Bad request"]);
+				return;
+			}
 			$image = ImageModel::findOne(["id" => $params["img_id"]]);
 			if (!$image) {
 				http_response_code(400);
 				echo json_encode(["error" => "Bad request"]);
 				return;
 			}
-			$likes = ImageModel::addLike($image);
-			echo json_encode(["likes" => $likes]);
+			$like = new LikeModel($params["img_id"]);
+			$like->insert();
+			echo json_encode($image->getLikes() + 1);
 		} catch (Exception $e) {
 			http_response_code(500);
 			echo json_encode(["error" => "Server error"]);

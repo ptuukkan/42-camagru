@@ -55,7 +55,7 @@ class CommentModel extends BaseModel
 
 	public function save()
 	{
-		$this->id = $this->_insert();
+		$this->id = $this->insert();
 		return true;
 	}
 
