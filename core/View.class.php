@@ -56,6 +56,11 @@ class View
 		if (empty($comments)) {
 			return;
 		}
+		$currentTime = time();
+		$size = count($comments);
+		for ($i = 0; $i < $size; $i++) {
+			$comments[$i]["comment_date"] = CommentModel::timeToString($comments[$i]["comment_date"]);
+		}
 		ob_start();
 		require "views/comments.php";
 		$html = ob_get_clean();

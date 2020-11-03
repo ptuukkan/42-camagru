@@ -12,7 +12,7 @@
 /* ************************************************************************** */
 ?>
 
-<div class="ui fluid card ten wide column centered">
+<div class="ui fluid card ten wide column centered" id="<?= $image["id"] ?>">
 	<div class="content">
 		<div class="right floated meta"><?= date("Y-m-d H:i:s", $image["img_date"]) ?></div>
 			<img class="ui avatar image" src="/public/img/user.png"> <?= $image["user"]["username"] ?>
@@ -34,9 +34,11 @@
 			<input type="text" placeholder="Add Comment..." class="comment-input">
 		</div>
 	</div>
-	<?= self::_printComments($image["comments"]) ?>
+	<div class="ui comments">
+		<?= self::_printComments($image["comments"]) ?>
+	</div>
 	<div class="extra content">
-		<a class="show-comments" <?= (count($image["comments"]) > 0) ? '' : 'style="display: none"' ?>>
+		<a class="show-comments " <?= (count($image["comments"]) > 1) ? '' : 'style="display: none"' ?>>
 			View all comments
 		</a>
 	</div>

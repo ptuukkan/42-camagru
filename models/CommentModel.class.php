@@ -28,6 +28,31 @@ class CommentModel extends BaseModel
 		parent::__construct();
 	}
 
+	public function getId()
+	{
+		return $this->id;
+	}
+
+	public function getDate()
+	{
+		return $this->comment_date;
+	}
+
+	public function getComment()
+	{
+		return $this->comment;
+	}
+
+	public function getUserId()
+	{
+		return $this->user_id;
+	}
+
+	public function getImgId()
+	{
+		return $this->img_id;
+	}
+
 	public function save()
 	{
 		$this->id = $this->_insert();
@@ -42,5 +67,24 @@ class CommentModel extends BaseModel
 	protected function _propertiesInDb()
 	{
 		return ["comment_date", "comment" ,"img_id", "user_id"];
+	}
+
+	public static function timeToString($time)
+	{
+		$currentTime = time();
+		$seconds_ago = $currentTime - $time;
+		if ($seconds_ago >= 31536000) {
+			return intval($seconds_ago / 31536000) . " years ago";
+		} elseif ($seconds_ago >= 2419200) {
+			return intval($seconds_ago / 2419200) . " months ago";
+		} elseif ($seconds_ago >= 86400) {
+			return intval($seconds_ago / 86400) . " days ago";
+		} elseif ($seconds_ago >= 3600) {
+			return intval($seconds_ago / 3600) . " hours ago";
+		} elseif ($seconds_ago >= 60) {
+			return intval($seconds_ago / 60) . " minutes ago";
+		} else {
+			return "less than a minute ago";
+		}
 	}
 }

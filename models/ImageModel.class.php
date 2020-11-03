@@ -107,8 +107,12 @@ class ImageModel extends BaseModel
 		for ($i = 0; $i < $size; $i++) {
 			$images[$i]["user"] = UserModel::findOne(["username"],
 				["id" => $images[$i]["user_id"]]);
-			$images[$i]["comments"] = CommentModel::findMany(["comment_date", "comment", "user_id"],
+			$comments = CommentModel::findMany(["comment_date", "comment", "user_id"],
 				["img_id" => $images[$i]["id"]]);
+			usort($comments, function($first, $second) {
+				return $first["comment_date"] < $second["comment_date"];
+			});
+			$images[$i]["comments"] = $comments;
 			$comments_size = count($images[$i]["comments"]);
 			for ($n = 0; $n < $comments_size; $n++) {
 				$images[$i]["comments"][$n]["user"] = UserModel::findOne(["username"],
@@ -116,5 +120,12 @@ class ImageModel extends BaseModel
 			}
 		}
 		return $images;
+	}
+
+	public static function addLike($image)
+	{
+		$this->likes = $this->likes + 1;
+		$this->_update($this->id, ["likes"]);
+		return $this->likes;
 	}
 }

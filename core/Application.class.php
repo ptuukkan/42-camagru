@@ -43,6 +43,8 @@ class Application
 		$this->_router->post("/signup", [UserController::class, "handleSignup"]);
 		$this->_router->post("/profile", [UserController::class, "saveProfile"]);
 		$this->_router->post("/edit/submit", [ImageController::class, "savePhoto"]);
+		$this->_router->post("/addcomment", [ImageController::class, "addComment"]);
+		$this->_router->post("/addlike", [ImageController::class, "addLike"]);
 
 		$this->session = new Session();
 		self::$app = $this;
@@ -61,7 +63,9 @@ class Application
 		} catch (Exception $e) {
 			$message["header"] = $e->getCode();
 			$message["body"] = $e->getMessage();
-			http_response_code($e->getCode());
+			if (!$e instanceof PDOException) {
+				http_response_code($e->getCode());
+			}
 			View::renderMessage("main", "error", $message);
 		}
 	}
