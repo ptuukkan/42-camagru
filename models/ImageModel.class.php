@@ -19,11 +19,18 @@ class ImageModel extends BaseModel
 {
 	protected $id;
 	protected $user_id;
-	protected $img_type;
-	protected $img_name;
 	protected $img_path;
-	protected $likes = 0;
 	protected $img_date;
+	private $_imgData;
+
+	public function __construct($params = [])
+	{
+		if (!empty($params)) {
+			$this->user_id = Application::$app->session->userId;
+			$this->_imgData = $params["img_data"];
+			$this->img_date = time();
+		}
+	}
 
 	public function getDate()
 	{
@@ -46,7 +53,7 @@ class ImageModel extends BaseModel
 	}
 	protected function _propertiesInDb()
 	{
-		return ["user_id", "img_type", "img_name", "img_path", "likes", "img_date"];
+		return ["user_id", "img_path", "img_date"];
 	}
 
 	private function _validateBase64($params)
@@ -127,10 +134,7 @@ class ImageModel extends BaseModel
 		return $images;
 	}
 
-	public function addLike()
-	{
-		$this->likes = $this->likes + 1;
-		$this->_update($this->id, ["likes"]);
-		return $this->likes;
+	public function validate() {
+		
 	}
 }

@@ -15,17 +15,18 @@ class CommentModel extends BaseModel
 {
 	protected $id;
 	protected $comment_date;
-	protected $comment;
+	protected $comment_text;
 	protected $img_id;
 	protected $user_id;
 
-	public function __construct($img_id, $comment)
+	public function __construct($params = [])
 	{
-		$this->img_id = $img_id;
-		$this->comment = $comment;
-		$this->comment_date = time();
-		$this->user_id = Application::$app->session->userId;
-		parent::__construct();
+		if (!empty($params)) {
+			$this->img_id = $params["img_id"];
+			$this->comment_text = $params["comment_text"];
+			$this->comment_date = time();
+			$this->user_id = Application::$app->session->userId;
+		}
 	}
 
 	public function getId()
@@ -66,7 +67,7 @@ class CommentModel extends BaseModel
 
 	protected function _propertiesInDb()
 	{
-		return ["comment_date", "comment" ,"img_id", "user_id"];
+		return ["comment_date", "comment_text" ,"img_id", "user_id"];
 	}
 
 	public static function timeToString($time)

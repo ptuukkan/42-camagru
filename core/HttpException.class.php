@@ -2,40 +2,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   LikeModel.class.php                                :+:      :+:    :+:   */
+/*   HttpException.class.php                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/03 20:58:21 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/03 20:58:21 by ptuukkan         ###   ########.fr       */
+/*   Created: 2020/11/04 21:44:06 by ptuukkan          #+#    #+#             */
+/*   Updated: 2020/11/04 21:44:06 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-class LikeModel extends BaseModel
+class HttpException extends Exception
 {
-	protected $user_id;
-	protected $img_id;
+	public $json;
 
-	public function __construct($params = [])
+	public function __construct($message = null, $code = 0, $json = false)
 	{
-		if (!empty($params)) {
-			$this->img_id = $img_id;
-			$this->user_id = Application::$app->session->userId;
-		}
+		$this->message = $message;
+		$this->code = $code;
+		$this->json = $json;
+
+		http_response_code($this->code);
 	}
 
-	protected function _tableName()
+	public function getJsonError()
 	{
-		return "likes";
-	}
-
-	protected function _propertiesInDb()
-	{
-		return ["user_id", "img_id"];
-	}
-
-	public function addLike($img_id)
-	{
-		
+		return json_encode(["error" => $this->message]);
 	}
 }

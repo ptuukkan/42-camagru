@@ -64,6 +64,14 @@ class UserModel extends BaseModel
 		return ["email", "username", "password", "active", "token"];
 	}
 
+	public static function getCurrentUser()
+	{
+		if (!Application::$app->session->loggedIn) {
+			return null;
+		}
+		return self::findOne(["id" => Application::$app->session->userId]);
+	}
+
 	public function login($params)
 	{
 		$this->setAttributes($params);

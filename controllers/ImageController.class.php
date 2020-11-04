@@ -35,74 +35,84 @@ class ImageController extends BaseController
 		View::renderView("main", "edit");
 	}
 
-	public function savePhoto($params)
+	public function addImage($params)
 	{
-		$image = new ImageModel();
+		$image;
+
+		if (!Application::$app->session->loggedIn) {
+			throw new HttpException("Not authorized", 401, true);
+		}
+		if (!isset($params["img_data"])) {
+			throw new HttpException("Bad request", 400, true);
+		}
+		$image = new ImageModel($params);
+		if (!$image->validate()) {
+			throw new HttpException("Bad request", 400, true);
+		}
+		try {
+			$image->save();
+		}
 		$image->newImage($params);
 	}
 
 	public function addComment($params)
 	{
+		$comment;
+		$user;
+
 		if (!Application::$app->session->loggedIn) {
-			http_response_code(401);
-			echo json_encode(["error" => "Not authorized"]);
-			return;
+			throw new HttpException("Not authorized", 401, true);
 		}
-		if (isset($params["img_id"]) && isset($params["comment"])) {
-			$comment = new CommentModel($params["img_id"], $params["comment"]);
-			try {
-				$comment->save();
-				echo json_encode([
-					"comment_id" => $comment->getId(),
-					"comment_date" => CommentModel::timeToString($comment->getDate()),
-					"comment" => $comment->getComment(),
-					"img_id" => $comment->getImgId(),
-					"user" => UserModel::findOne(["id" => $comment->getUserId()], ["username"])
-				]);
-			} catch (Exception $e) {
-				http_response_code(500);
-				echo json_encode(["error" => "Server error"]);
+		if (!isset($params["img_id"]) || !isset($params["comment"]) ||
+			strlen($params["comment"]) < 1) {
+			throw new HttpException("Bad request", 400, true);
+		}
+		try {
+			if (!ImageModel::findOne(["id" => $params["img_id"]])) {
+				throw new HttpException("Bad request", 400, true);
 			}
-		} else {
-				http_response_code(400);
-				echo json_encode(["error" => "Bad request"]);
+			$comment = new CommentModel($params);
+			$comment->save();
+			$user = UserModel::getCurrentUser();
+		} catch (PDOException $e) {
+			throw new HttpException("Server error", 500, true);
 		}
+
+		echo json_encode([
+			"comment_text" => $comment->getCommentText(),
+			"comment_date" => $comment->getCommentDate(),
+			"comment_username" => $user->getUsername()
+		]);
 	}
 
 	public function addLike($params)
 	{
+		$like;
+		$imgLikes;
+
 		if (!Application::$app->session->loggedIn) {
-			http_response_code(401);
-			echo json_encode(["error" => "Not authorized"]);
-			return;
+			throw new HttpException("Not authorized", 401, true);
 		}
 		if (!isset($params["img_id"])) {
-			http_response_code(400);
-			echo json_encode(["error" => "Bad request"]);
-			return;
+			throw new HttpException("Bad request", 400, true);
 		}
-		$image;
 		try {
+			if (!ImageModel::findOne(["id" => $params["img_id"]])) {
+				throw new HttpException("Bad request", 400, true);
+			}
 			if (LikeModel::findOne([
 				"user_id" => Application::$app->session->userId,
 				"img_id" => $params["img_id"]
 			])) {
-				http_response_code(400);
-				echo json_encode(["error" => "Bad request"]);
-				return;
+				throw new HttpException("Bad request", 400, true);
 			}
-			$image = ImageModel::findOne(["id" => $params["img_id"]]);
-			if (!$image) {
-				http_response_code(400);
-				echo json_encode(["error" => "Bad request"]);
-				return;
-			}
-			$like = new LikeModel($params["img_id"]);
-			$like->insert();
-			echo json_encode($image->getLikes() + 1);
-		} catch (Exception $e) {
-			http_response_code(500);
-			echo json_encode(["error" => "Server error"]);
+			$like = new LikeModel($params);
+			$like->save();
+			$imgLikes = LikeModel::findMany(["img_id" => $params["img_id"]]);
+		} catch (PDOException $e) {
+			throw new HttpException("Server error", 500, true);
 		}
+
+		echo json_encode(["likes" => count($imgLikes)]);
 	}
 }

@@ -38,11 +38,8 @@ function create()
 	$sql = "CREATE TABLE IF NOT EXISTS $DB_DBNAME.images
 	(
 		id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
-		img_name VARCHAR(255) UNIQUE NOT NULL,
 		user_id INT NOT NULL,
-		img_type VARCHAR(255) NOT NULL,
 		img_path VARCHAR(255) NOT NULL,
-		likes INT default 0,
 		img_date INT NOT NULL
 	);";
 	$pdo->prepare($sql)->execute();
@@ -50,7 +47,7 @@ function create()
 	(
 		id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
 		comment_date VARCHAR(255) NOT NULL,
-		comment VARCHAR(255) NOT NULL,
+		comment_text VARCHAR(255) NOT NULL,
 		img_id INT NOT NULL,
 		user_id INT NOT NULL
 	);";

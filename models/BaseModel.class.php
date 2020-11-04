@@ -13,15 +13,6 @@
 
 abstract class BaseModel
 {
-	public static $verbose = false;
-
-	public function __construct()
-	{
-		if (self::$verbose) {
-			print(static::class . " instance constructed" . PHP_EOL);
-		}
-	}
-
 	protected abstract function _tableName();
 
 	protected abstract function _propertiesInDb();

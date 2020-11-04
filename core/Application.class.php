@@ -16,6 +16,7 @@ require_once "core/Router.class.php";
 require_once "core/View.class.php";
 require_once "core/Database.class.php";
 require_once "core/Session.class.php";
+require_once "core/HttpException.class.php";
 
 class Application
 {
@@ -59,14 +60,16 @@ class Application
 		try {
 			$this->db = new Database();
 			$this->_controller = $this->_router->route();
-			call_user_func([$this->_controller, $this->_controller->action], $this->_request->params);
-		} catch (Exception $e) {
-			$message["header"] = $e->getCode();
-			$message["body"] = $e->getMessage();
-			if (!$e instanceof PDOException) {
-				http_response_code($e->getCode());
+			call_user_func([$this->_controller, $this->_controller->action],
+				$this->_request->params);
+		} catch (HttpException $e) {
+			if ($e->json) {
+				echo $e->getJsonError();
+			} else {
+				$message["header"] = $e->getCode();
+				$message["body"] = $e->getMessage();
+				View::renderMessage("main", "error", $message);
 			}
-			View::renderMessage("main", "error", $message);
 		}
 	}
 
