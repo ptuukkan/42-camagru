@@ -17,120 +17,109 @@ abstract class BaseModel
 
 	protected abstract function _propertiesInDb();
 
-	public static function findMany($fields, $filter = [])
+	public static function findMany($fields = [], $filter = [])
 	{
+		$db = Application::$app->db;
 		$table = static::_tableName();
-
-		$sql = "SELECT " . implode(", ", $fields) . " FROM $table";
+		if (empty($fields)) {
+			$fields = "*";
+		} else {
+			$fields = implode(", ", $fields);
+		}
+		$sql = "SELECT " . $fields . " FROM $table";
 		if (!empty($filter)) {
-			$filterPlaceholders = array_map(function($field) {
+			$whereFilter = array_map(function($field) {
 				return "$field = :$field";
 			}, array_keys($filter));
-			$sql .= " WHERE " . implode(" AND ", $filterPlaceholders);
+			$sql .= " WHERE " . implode(" AND ", $whereFilter);
 		}
-		$statement = Application::$app->db->prepare($sql);
+		$db->prepare($sql);
 		if (!empty($filter)) {
 			foreach ($filter as $field => $value) {
-				if (is_bool($value)) {
-					$statement->bindValue(":$field", $value, PDO::PARAM_BOOL);
-				} else if (is_int($value)) {
-					$statement->bindValue(":$field", $value, PDO::PARAM_INT);
-				} else {
-					$statement->bindValue(":$field", $value);
-				}
+				$db->bindValue(":$field", $value);
 			}
 		}
-		$statement->execute();
-		return $statement->fetchAll();
+		$db->execute();
+		if ($fields === "*") {
+			return $db->fetchAll(static::class);
+		}
+		return $db->fetchAll();
 	}
 
 	public static function findOne($filter, $fields = [])
 	{
+		$db = Application::$app->db;
 		$table = static::_tableName();
-		$filterPlaceholders = array_map(function($field) {
+		$whereFilter = array_map(function($field) {
 			return "$field = :$field";
 		}, array_keys($filter));
 		if (empty($fields)) {
-			$selectFilter = "*";
+			$fields = "*";
 		} else {
-			$selectFilter = implode(", ", $fields);
+			$fields = implode(", ", $fields);
 		}
-		$sql = "SELECT " . $selectFilter . " FROM " . $table;
-		$sql .= " WHERE " . implode(" AND ", $filterPlaceholders);
-		$statement = Application::$app->db->prepare($sql);
+		$sql = "SELECT " . $fields . " FROM " . $table;
+		$sql .= " WHERE " . implode(" AND ", $whereFilter);
+		$db->prepare($sql);
 		foreach ($filter as $field => $value) {
-			if (is_bool($value)) {
-				$statement->bindValue(":$field", $value, PDO::PARAM_BOOL);
-			} else if (is_int($value)) {
-				$statement->bindValue(":$field", $value, PDO::PARAM_INT);
-			} else {
-				$statement->bindValue(":$field", $value);
-			}
+			$db->bindValue(":$field", $value);
 		}
-		$statement->execute();
-		if (empty($fields)) {
-			return $statement->fetchObject(static::class);
+		if ($fields === "*") {
+			return $db->fetch(static::class);
 		}
-		return $statement->fetch();
+		return $db->fetch();
 	}
 
-	public function insert()
+	protected function _insert()
 	{
+		$db = Application::$app->db;
 		$table = static::_tableName();
 		$properties = static::_propertiesInDb();
-		$valuePlaceholders = array_map(function($property) {
+		$params = array_map(function($property) {
 			return ":$property";
 		}, $properties);
-		$sql = "INSERT INTO $table (" . implode(", ", $properties) .
-			") VALUES (" . implode(", ", $valuePlaceholders) . ")";
-		$statement = Application::$app->db->prepare($sql);
+		$sql = "INSERT INTO $table (" . implode(", ", $properties);
+		$sql .= ") VALUES (" . implode(", ", $params) . ")";
+		$db->prepare($sql);
 		foreach ($properties as $property) {
-			if (is_bool($this->{$property})) {
-				$statement->bindValue(":$property", $this->{$property}, PDO::PARAM_BOOL);
-			} else if (is_int($this->{$property})) {
-				$statement->bindValue(":$property", $this->{$property}, PDO::PARAM_INT);
-			} else {
-				$statement->bindValue(":$property", $this->{$property});
-			}
+			$db->bindValue(":$property", $this->{$property});
 		}
-		$statement->execute();
-		return Application::$app->db->lastInsertId();
+		$this->id = $db->execute();
 	}
 
-	protected function _update($id, $properties)
+	protected function _update()
 	{
+		$db = Application::$app->db;
 		$table = static::_tableName();
-		$valuePlaceholders = array_map(function($property) {
+		$properties = static::_propertiesInDb();
+		$params = array_map(function($property) {
 			return "$property=:$property";
 		}, $properties);
-		$sql = "UPDATE $table SET " . implode(", ", $valuePlaceholders) . " WHERE id=:id";
-		$statement = Application::$app->db->prepare($sql);
+		$sql = "UPDATE $table SET " . implode(", ", $params) . " WHERE id=:id";
+		$db->prepare($sql);
 		foreach ($properties as $property) {
-			if (is_bool($this->{$property})) {
-				$statement->bindValue(":$property", $this->{$property}, PDO::PARAM_BOOL);
-			} else if (is_int($this->{$property})) {
-				$statement->bindValue(":$property", $this->{$property}, PDO::PARAM_INT);
-			} else {
-				$statement->bindValue(":$property", $this->{$property});
-			}
+			$db->bindValue(":$property", $this->{$property});
 		}
-		$statement->bindValue(":id", $id, PDO::PARAM_INT);
-		$statement->execute();
+		$db->bindValue(":id", $this->id);
+		$db->execute();
 	}
 
-	protected function _delete($id)
+	public function save()
 	{
+		if ($this->id) {
+			$this->_update();
+		} else {
+			$this->_insert();
+		}
+	}
+
+	public function delete()
+	{
+		$db = Application::$app->db;
 		$table = static::_tableName();
 		$sql = "DELETE FROM $table WHERE id=:id";
-		$statement = Application::$app->db->prepare($sql);
-		$statement->bindValue(":id", $id, PDO::PARAM_INT);
-		$statement->execute();
-	}
-
-	public function __destruct()
-	{
-		if (self::$verbose) {
-			print(static::class . " instance destructed" . PHP_EOL);
-		}
+		$db->prepare($sql);
+		$db->bindValue(":id", $this->id);
+		$db->execute();
 	}
 }

@@ -37,16 +37,6 @@ class ImageModel extends BaseModel
 		return $this->date_added;
 	}
 
-	public function getFilename()
-	{
-		return '/public/img/uploads/' . $this->img_name . '.' . $this->img_type;
-	}
-
-	public function getLikes()
-	{
-		return $this->likes;
-	}
-
 	protected function _tableName()
 	{
 		return "images";
@@ -56,64 +46,9 @@ class ImageModel extends BaseModel
 		return ["user_id", "img_path", "img_date"];
 	}
 
-	private function _validateBase64($params)
-	{
-		$allowedExtensions = ['png', 'jpg', 'jpeg'];
-		if (!isset($params["data"])) {
-			return false;
-		}
-		$explode = explode(',', $params["data"]);
-		if(count($explode) !== 2){
-			return false;
-		}
-		if (!preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $explode[1])) {
-			return false;
-		}
-		$format = str_replace(
-			['data:image/', ';', 'base64'],
-			['', '', '',],
-			$explode[0]
-		);
-		if (!in_array($format, $allowedExtensions)) {
-			return false;
-		}
-		return ["type" => $format, "data" => base64_decode($explode[1])];
-	}
-
-	private function _saveImage($imgData)
-	{
-		if (!file_put_contents('public/img/uploads/' . $this->img_name . '.' . $this->img_type, $imgData["data"])) {
-			throw new Exception("Cannot save image", 500);
-		}
-	}
-
-	public function newImage($params)
-	{
-		$imgData = $this->_validateBase64($params);
-		if (!$imgData) {
-			http_response_code(400);
-			return;
-		}
-		$this->img_name = uniqid("img_");
-		$this->img_type = $imgData["type"];
-		$this->img_path = '/public/img/uploads/' . $this->img_name . '.' . $this->img_type;
-		$this->user_id = Application::$app->session->userId;
-		$this->img_date = time();
-		try {
-			$this->id = $this->insert();
-			$this->_saveImage($imgData);
-		} catch (Exception $e) {
-			if (!$e instanceof PDOException) {
-				$this->_delete($this->id);
-			}
-			http_response_code(500);
-			echo json_encode(["error" => $e->getMessage()]);
-		}
-	}
-
 	public static function getImages()
 	{
-		$fields = ["id", "img_path", "img_date", "user_id", "likes"];
+		$fields = ["id", "img_path", "img_date", "user_id"];
 		$images = self::findMany($fields);
 		$size = count($images);
 		for ($i = 0; $i < $size; $i++) {
@@ -127,14 +62,41 @@ class ImageModel extends BaseModel
 			$images[$i]["comments"] = $comments;
 			$comments_size = count($images[$i]["comments"]);
 			for ($n = 0; $n < $comments_size; $n++) {
-				$images[$i]["comments"][$n]["user"] = UserModel::findOne(["id" => 
+				$images[$i]["comments"][$n]["user"] = UserModel::findOne(["id" =>
 					$images[$i]["comments"][$n]["user_id"]], ["username"]);
 			}
 		}
 		return $images;
 	}
 
-	public function validate() {
-		
+	public function validate()
+	{
+		$parts = explode(',', $this->_imgData);
+		if (count($parts) !== 2) {
+			return false;
+		}
+		if (!preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $parts[1])) {
+			return false;
+		}
+		$imgType = str_replace(
+			['data:image/', ';', 'base64'],
+			['', '', '',],
+			$parts[0]
+		);
+		$allowedTypes = ['png', 'jpg', 'jpeg'];
+		if (!in_array($imgType, $allowedTypes)) {
+			return false;
+		}
+		$this->img_path = "/public/img/uploads/" . uniqid("img_") . "." . $imgType;
+		$this->_imgData = $parts[1];
+	}
+
+	public function save()
+	{
+		parent::save();
+		if (!file_put_contents($this->img_path, $this->_imgData)) {
+			$this->delete();
+			throw new HttpException("Cannot save image", 500, true);
+		}
 	}
 }

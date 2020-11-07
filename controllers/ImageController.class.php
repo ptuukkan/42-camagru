@@ -19,12 +19,17 @@ class ImageController extends BaseController
 {
 	public function index($params)
 	{
-		$images = ImageModel::getImages();
-		usort($images, function($first, $second) {
-			return $first["img_date"] < $second["img_date"];
-		});
-		//print_r($images);
-		 View::renderView("main", "gallery", $images);
+		try {
+			$images = ImageModel::getImages();
+			usort($images, function($first, $second) {
+				return $first["img_date"] < $second["img_date"];
+			});
+			View::renderView("main", "gallery", $images);
+		} catch (Exception $e) {
+			$message["header"] = "Error";
+			$message["body"] = $e->getMessage();
+			View::renderMessage("main", "error", $message);
+		}
 	}
 
 	public function edit($params)
@@ -51,8 +56,14 @@ class ImageController extends BaseController
 		}
 		try {
 			$image->save();
+		} catch (PDOException $e) {
+			throw new HttpException($e->getMessage(), 500, true);
 		}
-		$image->newImage($params);
+
+		echo json_encode([
+			"img_id" => $image->getId(),
+			"img_path" => $image->getImgPath()
+		]);
 	}
 
 	public function addComment($params)
@@ -75,7 +86,7 @@ class ImageController extends BaseController
 			$comment->save();
 			$user = UserModel::getCurrentUser();
 		} catch (PDOException $e) {
-			throw new HttpException("Server error", 500, true);
+			throw new HttpException($e->getMessage(), 500, true);
 		}
 
 		echo json_encode([
@@ -110,7 +121,7 @@ class ImageController extends BaseController
 			$like->save();
 			$imgLikes = LikeModel::findMany(["img_id" => $params["img_id"]]);
 		} catch (PDOException $e) {
-			throw new HttpException("Server error", 500, true);
+			throw new HttpException($e->getMessage(), 500, true);
 		}
 
 		echo json_encode(["likes" => count($imgLikes)]);

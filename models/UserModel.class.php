@@ -15,18 +15,38 @@ require_once "BaseModel.class.php";
 
 class UserModel extends BaseModel
 {
-	private $_errors = [];
 	protected $id = null;
 	protected $email = "";
 	protected $username = "";
 	protected $password = "";
-	private $_passwordConfirm = "";
-	protected $active = true;
+	protected $active = false;
 	protected $token = "";
+	protected $notifications = true;
+	private $_passwordConfirm = "";
+	private $_newPassword = "";
+	private $_passwordChanged = false;
+	private $_errors = [];
+
+	public function __construct($params = [])
+	{
+		if (!empty($params)) {
+			$this->email = $params["email"] ?? "";
+			$this->username = $params["username"] ?? "";
+			$this->password = $params["password"] ?? "";
+			$this->_passwordConfirm = $params["password_confirm"] ?? "";
+			$this->_newPassword = $params["new_password"] ?? "";
+			$this->notifications = ($params["notifications"]) ?? false;
+		}
+	}
 
 	public function getId()
 	{
 		return $this->id;
+	}
+
+	public function setId($id)
+	{
+		$this->id = $id;
 	}
 
 	public function getEmail()
@@ -39,19 +59,48 @@ class UserModel extends BaseModel
 		return $this->username;
 	}
 
-	public function isActive()
-	{
-		return $this->active;
-	}
-
 	public function getToken()
 	{
 		return $this->token;
 	}
 
+	public function getPassword()
+	{
+		return $this->password;
+	}
+
+	public function setPassword($password)
+	{
+		$this->password = $password;
+	}
+
+	public function getNewPassword()
+	{
+		return $this->_newPassword;
+	}
+
+
 	public function getErrors()
 	{
 		return $this->_errors;
+	}
+
+	public function hasErrors()
+	{
+		if (empty($this->_errors)) {
+			return false;
+		}
+		return true;
+	}
+
+	public function isActive()
+	{
+		return $this->active;
+	}
+
+	public function setActive()
+	{
+		$this->active = true;
 	}
 
 	protected function _tableName()
@@ -61,7 +110,20 @@ class UserModel extends BaseModel
 
 	protected function _propertiesInDb()
 	{
-		return ["email", "username", "password", "active", "token"];
+		if ($this->_passwordChanged) {
+			return ["email", "username", "password", "active", "token", "notifications"];
+		}
+		return ["email", "username", "active", "token", "notifications"];
+	}
+
+	public function setPasswordChanged()
+	{
+		$this->_passwordChanged = true;
+	}
+
+	public function generateToken()
+	{
+		$this->token = bin2hex(random_bytes(50));
 	}
 
 	public static function getCurrentUser()
@@ -72,82 +134,20 @@ class UserModel extends BaseModel
 		return self::findOne(["id" => Application::$app->session->userId]);
 	}
 
-	public function login($params)
+	public function verifyPassword($password)
 	{
-		$this->setAttributes($params);
-		$this->_validateUsername(false);
-		$this->_validatePassword();
-		if (empty($this->_errors)) {
-			$user = self::findOne(["username" => $this->username]);
-			if ($user && password_verify($this->password, $user->password)) {
-				if ($user->active) {
-					return $user;
-				} else {
-					$this->_setError("global", "User email is not confirmed");
-					throw new Exception();
-				}
-			}
+		if (password_verify($password, $this->password)) {
+			return true;
 		}
-		unset($this->_errors);
-		$this->_setError("global", "Login failed");
-		throw new Exception();
+		return false;
 	}
 
-	public function signUp($params)
+	public function save()
 	{
-		$this->setAttributes($params);
-		$this->validate();
-		if (!empty($this->_errors)) {
-			throw new Exception();
-		}
-		$this->password = password_hash($this->password, PASSWORD_BCRYPT);
-		$this->_passwordConfirm = "";
-		$this->token = bin2hex(random_bytes(50));
-		try {
-			$this->insert();
-		} catch (Exception $e) {
-			$this->_setError("global", $e->getMessage());
-			throw new Exception();
-		}
-	}
-
-	public function saveProfile($params)
-	{
-		$this->setAttributes($params);
-		$user = UserModel::findOne(["id" => Application::$app->session->userId]);
-		if (!password_verify($params["password"], $user->password)) {
-			$this->_setError("password", "Current password is invalid");
-			throw new Exception();
-		}
-		if ($user->username !== $this->username) {
-			$this->_validateUsername();
-		}
-		if ($user->email !== $this->email) {
-			$this->_validateEmail();
-		}
-		if (!empty($this->_errors)) {
-			throw new Exception();
-		}
-		$properties = ["email", "username"];
-		if (strlen($params["new_password"]) > 0) {
-			$this->password = $params["new_password"];
-			$this->_validatePassword();
-			$this->_validatePwConfirm();
-			if (!empty($this->_errors)) {
-				if (isset($this->_errors["password"])) {
-					$this->_errors["new_password"] = $this->_errors["password"];
-					unset($this->_errors["password"]);
-				}
-				throw new Exception();
-			}
+		if ($this->_passwordChanged) {
 			$this->password = password_hash($this->password, PASSWORD_BCRYPT);
-			$properties[] = "password";
 		}
-		try {
-			$this->_update(Application::$app->session->userId, $properties);
-		} catch (Exception $e) {
-			$this->_setError("global", $e->getMessage());
-		}
+		parent::save();
 	}
 
 	public static function verifyEmail($token)
@@ -179,69 +179,76 @@ class UserModel extends BaseModel
 		$this->_passwordConfirm = $params["password_confirm"] ?? "";
 	}
 
-	private function _setError($attribute, $error)
+	public function setError($attribute, $error)
 	{
 		$this->_errors[$attribute][] = $error;
 	}
 
-	private function _validateEmail()
+	public function validateEmail()
 	{
 		$valid = filter_var($this->email, FILTER_VALIDATE_EMAIL);
 		if (!$valid) {
-			$this->_setError("email", "Email address is not valid");
+			$this->setError("email", "Email address is not valid");
 		}
 		if ($valid && self::findOne(["email" => $this->email])) {
-			$this->_setError("email", "Email address is already in use");
+			$this->setError("email", "Email address is already in use");
 		}
 	}
 
-	private function _validateUsername($unique = true)
+	public function validateUsername()
 	{
 		if (strlen($this->username) < 3) {
-			$this->_setError("username", "Username must be at least 3 characters");
+			$this->setError("username", "Username must be at least 3 characters");
 		}
 		$valid = !filter_var($this->username, FILTER_VALIDATE_REGEXP, [
 			"options" => ["regexp" => "/[^a-zA-Z0-9]/"]
 		]);
 		if (!$valid) {
-			$this->_setError("username", "Username must contain only alphanumeric characters");
+			$this->setError("username", "Username must contain only alphanumeric characters");
 		}
-		if ($unique && $valid && self::findOne(["username" => $this->username])) {
-			$this->_setError("username", "Username is already in use");
+		if ($valid && self::findOne(["username" => $this->username])) {
+			$this->setError("username", "Username is already in use");
 		}
 
 	}
 
-	private function _validatePassword()
+	public function validatePassword()
 	{
 		if (strlen($this->password) < 8) {
-			$this->_setError("password", "Password must be at least 8 characters");
+			$this->setError("password", "Password must be at least 8 characters");
 		}
 		if (!filter_var($this->password, FILTER_VALIDATE_REGEXP, [
 			"options" => ["regexp" => "/[A-Z]/"]
 		])) {
-			$this->_setError("password", "Password must contain at least 1 uppercase character");
+			$this->setError("password", "Password must contain at least 1 uppercase character");
 		}
 		if (!filter_var($this->password, FILTER_VALIDATE_REGEXP, [
 			"options" => ["regexp" => "/[0-9]/"]
 		])) {
-			$this->_setError("password", "Password must contain at least 1 number");
+			$this->setError("password", "Password must contain at least 1 number");
 		}
 	}
 
-	private function _validatePwConfirm()
+	public function validatePwConfirm()
 	{
 		if ($this->password !== $this->_passwordConfirm) {
-			$this->_setError("password_confirm", "Passwords do not match");
+			$this->setError("password_confirm", "Passwords do not match");
 		}
 	}
 
 	public function validate()
 	{
-		$this->_validateEmail();
-		$this->_validateUsername();
-		$this->_validatePassword();
-		$this->_validatePwConfirm();
+		try {
+			$this->validateEmail();
+			$this->validateUsername();
+			$this->validatePassword();
+			$this->validatePwConfirm();
+		} catch (Exception $e) {
+			$this->setError("global", "Server error");
+		}
+		if (!empty($this->_errors)) {
+			throw new Exception();
+		}
 	}
 
 	public function __toString()

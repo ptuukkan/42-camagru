@@ -32,7 +32,8 @@ function create()
 		email VARCHAR(255) UNIQUE NOT NULL,
 		password VARCHAR(255) NOT NULL,
 		active BOOLEAN default false,
-		token VARCHAR(255) NOT NULL
+		token VARCHAR(255) NOT NULL,
+		notifications BOOLEAN default true
 	);";
 	$pdo->prepare($sql)->execute();
 	$sql = "CREATE TABLE IF NOT EXISTS $DB_DBNAME.images

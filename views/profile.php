@@ -39,6 +39,16 @@
     >
     <?= self::_printFieldErrors("username", $params) ?>
   </div>
+  <div class="field">
+    <div class="ui checkbox">
+      <input
+        type="checkbox"
+        name="notifications"
+        <?= ($params["values"]["notifications"]) ? "checked" : "" ?>
+      >
+      <label>Enable notifications</label>
+    </div>
+  </div>
   <div class="field required">
     <label>Current Password</label>
     <input
@@ -48,7 +58,7 @@
       placeholder="Password"
       value=<?= (isset($params["values"]["password"])) ? $params["values"]["password"] : "" ?>
     >
-    <?= self::_printFieldErrors("password", $params) ?>
+    <?= self::_printFieldErrors("current_password", $params) ?>
   </div>
   <div class="field">
     <label>New Password</label>

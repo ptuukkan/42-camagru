@@ -41,13 +41,13 @@ class UserController extends BaseController
 	public function profile($params)
 	{
 		if (!Application::$app->session->loggedIn) {
-			throw new Exception("Unauthorized", 401);
+			throw new HttpException("Unauthorized", 401);
 		}
 		$user = new UserModel();
 		$params = [];
 		try {
 			$user = UserModel::findOne(["id" => Application::$app->session->userId],
-				["email", "username"]);
+				["email", "username", "notifications"]);
 			$params["values"] = $user;
 		} catch (Exception $e) {
 			$params["status"] = "error";
@@ -58,13 +58,26 @@ class UserController extends BaseController
 
 	public function handleLogin($params)
 	{
-		$user = new UserModel();
 		try {
-			$user = $user->login($params);
+			if (!isset($params["username"]) || !isset($params["password"])) {
+				throw new Exception("Login failed");
+			}
+			$user = UserModel::findOne(["username" => $params["username"]]);
+			if (!$user || !$user->verifyPassword($params["password"])) {
+				throw new Exception("Login failed");
+			}
+			if (!$user->isActive()) {
+				throw new Exception("Email address is not confirmed");
+			}
 		} catch (Exception $e) {
+			if ($e instanceof PDOException) {
+				$errors["global"][] = "Server error";
+			} else {
+				$errors["global"][] = $e->getMessage();
+			}
 			View::renderView("main", "login", [
-				"values" => $params, "errors" => $user->getErrors()
-			]);	$params["status"] = "success";
+				"values" => $params, "errors" => $errors
+			]);
 			return;
 		}
 		Application::$app->session->setSession($user->getId());
@@ -73,12 +86,19 @@ class UserController extends BaseController
 
 	public function handleSignup($params)
 	{
-		$user = new UserModel();
+		$user = new UserModel($params);
+		$user->setPasswordChanged();
 		try {
-			$user->signUp($params);
+			$user->validate();
+			$user->generateToken();
+			$user->save();
 		} catch (Exception $e) {
+			$errors = $user->getErrors();
+			if ($e instanceof PDOException) {
+				$errors["global"][] = $e->getMessage();
+			}
 			View::renderView("main", "signup", [
-				"values" => $params, "errors" => $user->getErrors()
+				"values" => $params, "errors" => $errors
 			]);
 			return;
 		}
@@ -90,37 +110,80 @@ class UserController extends BaseController
 
 	public function saveProfile($params)
 	{
+		$newUser;
+		$user;
+		$errors = [];
+		$status = "success";
+
 		if (!Application::$app->session->loggedIn) {
-			throw new Exception("Unauthorized", 401);
+			throw new HttpException("Unauthorized", 401);
 		}
-		$user = new UserModel();
+		if (!isset($params["notifications"])) {
+			$params["notifications"] = false;
+		} else {
+			$params["notifications"] = true;
+		}
+		$newUser = new UserModel($params);
 		try {
-			$user->saveProfile($params);
+			$user = UserModel::findOne(["id" => Application::$app->session->userId]);
+			if (!$user) {
+				throw new Exception("Server error");
+			}
+			if (!$user->verifyPassword($newUser->getPassword())) {
+				$newUser->setError("current_password", "Current password is invalid");
+			}
+			if ($newUser->getEmail() !== $user->getEmail()) {
+				$newUser->validateEmail();
+			}
+			if ($newUser->getUsername() !== $user->getUsername()) {
+				$newUser->validateUsername();
+			}
+			if ($newUser->getNewPassword()) {
+				$newUser->setPassword($newUser->getNewPassword());
+				$newUser->validatePassword();
+				$newUser->validatePwConfirm();
+				$newUser->setPasswordChanged();
+			}
+			$newUser->setId($user->getId());
+			if (!$newUser->hasErrors()) {
+				$newUser->save();
+			}
 		} catch (Exception $e) {
-			View::renderView("main", "profile", [
-				"values" => $params, 
-				"errors" => $user->getErrors(),
-				"status" => "error"
-			]);
-			return;
+			$newUser->setError("global", $e->getMessage());
 		}
-		unset($params["password"]);
-		unset($params["password_confirm"]);
-		unset($params["new_password"]);
+		if ($newUser->hasErrors()) {
+			$status = "error";
+		} else {
+			unset($params["password"]);
+			unset($params["password_confirm"]);
+			unset($params["new_password"]);
+		}
 		View::renderView("main", "profile", [
 			"values" => $params,
-			"errors" => $user->getErrors(),
-			"status" => "success"
+			"errors" => $newUser->getErrors(),
+			"status" => $status
 		]);
 	}
 
 	public function verifyEmail($params)
 	{
+		$status;
+		$user;
+
 		if (!isset($params["token"]) || strlen($params["token"]) !== 100 ||
 			!ctype_xdigit($params["token"])) {
-		 	throw new Exception("Bad request", 400);
+		 	throw new HttpException("Bad request", 400);
 		}
-		UserModel::verifyEmail($params["token"]);
+		try {
+			$user = UserModel::findOne(["token" => $params["token"]]);
+			if (!$user) {
+				throw new HttpException("Bad request", 400);
+			}
+			$user->setActive();
+			$user->save();
+		} catch (Exception $e) {
+			throw new HttpException("Server error", 500);
+		}
 		$message["header"] = "Success";
 		$message["body"] = "Email address successfully verified, you can now log in.";
 		View::renderMessage("main", "success", $message);

@@ -36,7 +36,7 @@ class Router
 		$this->_routes["post"][$path] = $callback;
 	}
 
-	private function _getcallback()
+	private function _getCallback()
 	{
 		if (isset($this->_routes[$this->_request->method][$this->_request->path])) {
 			$callback = $this->_routes[$this->_request->method][$this->_request->path];
@@ -51,12 +51,12 @@ class Router
 
 	public function route()
 	{
-		$callback = $this->_getcallback();
+		$callback = $this->_getCallback();
 		if ($callback) {
 			require_once "controllers/" . $callback[0] . ".class.php";
 			$controller = new $callback[0]($callback[1]);
 		} else {
-			throw new Exception("Page not found", 404);
+			throw new HttpException("Page not found", 404);
 		}
 		return $controller;
 	}
