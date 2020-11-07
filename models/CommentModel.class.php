@@ -18,6 +18,7 @@ class CommentModel extends BaseModel
 	protected $comment_text;
 	protected $img_id;
 	protected $user_id;
+	public $user;
 
 	public function __construct($params = [])
 	{
@@ -27,32 +28,18 @@ class CommentModel extends BaseModel
 			$this->comment_date = time();
 			$this->user_id = Application::$app->session->userId;
 		}
+		$this->user = UserModel::findOne(["id" => $this->user_id]);
 	}
 
-	public function getId()
-	{
-		return $this->id;
-	}
+	public function getId() { return $this->id; }
 
-	public function getDate()
-	{
-		return $this->comment_date;
-	}
+	public function getDate() { return $this->comment_date; }
 
-	public function getComment()
-	{
-		return $this->comment;
-	}
+	public function getComment() { return $this->comment; }
 
-	public function getUserId()
-	{
-		return $this->user_id;
-	}
+	public function getUserId() { return $this->user_id; }
 
-	public function getImgId()
-	{
-		return $this->img_id;
-	}
+	public function getImgId() { return $this->img_id; }
 
 	public function save()
 	{
@@ -70,10 +57,10 @@ class CommentModel extends BaseModel
 		return ["comment_date", "comment_text" ,"img_id", "user_id"];
 	}
 
-	public static function timeToString($time)
+	public function timeToString()
 	{
 		$currentTime = time();
-		$seconds_ago = $currentTime - $time;
+		$seconds_ago = $currentTime - $this->comment_date;
 		if ($seconds_ago >= 31536000) {
 			return intval($seconds_ago / 31536000) . " years ago";
 		} elseif ($seconds_ago >= 2419200) {

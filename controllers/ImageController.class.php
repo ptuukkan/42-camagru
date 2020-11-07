@@ -19,17 +19,20 @@ class ImageController extends BaseController
 {
 	public function index($params)
 	{
+		$images;
+
 		try {
-			$images = ImageModel::getImages();
+			$images = ImageModel::findMany();
 			usort($images, function($first, $second) {
-				return $first["img_date"] < $second["img_date"];
+				return $first->getImgDate() < $second->getImgDate();
 			});
-			View::renderView("main", "gallery", $images);
 		} catch (Exception $e) {
 			$message["header"] = "Error";
 			$message["body"] = $e->getMessage();
 			View::renderMessage("main", "error", $message);
 		}
+
+		View::renderView("main", "gallery", $images);
 	}
 
 	public function edit($params)
@@ -50,11 +53,11 @@ class ImageController extends BaseController
 		if (!isset($params["img_data"])) {
 			throw new HttpException("Bad request", 400, true);
 		}
-		$image = new ImageModel($params);
-		if (!$image->validate()) {
-			throw new HttpException("Bad request", 400, true);
-		}
 		try {
+			$image = new ImageModel($params);
+			if (!$image->validate()) {
+				throw new HttpException("Bad request", 400, true);
+			}
 			$image->save();
 		} catch (PDOException $e) {
 			throw new HttpException($e->getMessage(), 500, true);

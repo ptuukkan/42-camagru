@@ -39,51 +39,23 @@ class UserModel extends BaseModel
 		}
 	}
 
-	public function getId()
-	{
-		return $this->id;
-	}
+	public function getId() { return $this->id; }
 
-	public function setId($id)
-	{
-		$this->id = $id;
-	}
+	public function setId($id) { $this->id = $id; }
 
-	public function getEmail()
-	{
-		return $this->email;
-	}
+	public function getEmail() { return $this->email; }
 
-	public function getUsername()
-	{
-		return $this->username;
-	}
+	public function getUsername() { return $this->username; }
 
-	public function getToken()
-	{
-		return $this->token;
-	}
+	public function getToken() { return $this->token; }
 
-	public function getPassword()
-	{
-		return $this->password;
-	}
+	public function getPassword() { return $this->password; }
 
-	public function setPassword($password)
-	{
-		$this->password = $password;
-	}
+	public function setPassword($password) { $this->password = $password; }
 
-	public function getNewPassword()
-	{
-		return $this->_newPassword;
-	}
+	public function getNewPassword() { return $this->_newPassword; }
 
-
-	public function getErrors()
-	{
-		return $this->_errors;
-	}
+	public function getErrors() { return $this->_errors; }
 
 	public function hasErrors()
 	{
@@ -93,20 +65,16 @@ class UserModel extends BaseModel
 		return true;
 	}
 
-	public function isActive()
+	public function setError($attribute, $error)
 	{
-		return $this->active;
+		$this->_errors[$attribute][] = $error;
 	}
 
-	public function setActive()
-	{
-		$this->active = true;
-	}
+	public function isActive() { return $this->active; }
 
-	protected function _tableName()
-	{
-		return "users";
-	}
+	public function setActive() { $this->active = true; }
+
+	protected function _tableName() { return "users"; }
 
 	protected function _propertiesInDb()
 	{
@@ -116,10 +84,7 @@ class UserModel extends BaseModel
 		return ["email", "username", "active", "token", "notifications"];
 	}
 
-	public function setPasswordChanged()
-	{
-		$this->_passwordChanged = true;
-	}
+	public function setPasswordChanged() { $this->_passwordChanged = true; }
 
 	public function generateToken()
 	{
@@ -148,40 +113,6 @@ class UserModel extends BaseModel
 			$this->password = password_hash($this->password, PASSWORD_BCRYPT);
 		}
 		parent::save();
-	}
-
-	public static function verifyEmail($token)
-	{
-		try {
-			$user = static::findOne(["active", "id"], ["token" => $token]);
-		} catch (Exception $e) {
-			throw new Exception("Internal server error", 500);
-		}
-		if (!$user) {
-			throw new Exception("Bad request", 400);
-		}
-		if ($user->active) {
-			return;
-		}
-		$user->active = true;
-		try {
-			$user->_update($user->id, ["active"]);
-		} catch (Exception $e) {
-			throw new Exception("Internal server error", 500);
-		}
-	}
-
-	public function setAttributes($params)
-	{
-		$this->email = $params["email"] ?? "";
-		$this->username = $params["username"] ?? "";
-		$this->password = $params["password"] ?? "";
-		$this->_passwordConfirm = $params["password_confirm"] ?? "";
-	}
-
-	public function setError($attribute, $error)
-	{
-		$this->_errors[$attribute][] = $error;
 	}
 
 	public function validateEmail()
@@ -249,18 +180,5 @@ class UserModel extends BaseModel
 		if (!empty($this->_errors)) {
 			throw new Exception();
 		}
-	}
-
-	public function __toString()
-	{
-		$str = "UserModel(" . PHP_EOL;
-		$str .= "id: " . $this->id . PHP_EOL;
-		$str .= "active: " . $this->active . PHP_EOL;
-		$str .= "email: " . $this->email . PHP_EOL;
-		$str .= "username: " . $this->username . PHP_EOL;
-		$str .= "password: " . $this->password . PHP_EOL;
-		$str .= "token: " . $this->token . PHP_EOL;
-		$str .= ")";
-		return $str;
 	}
 }

@@ -22,6 +22,9 @@ class ImageModel extends BaseModel
 	protected $img_path;
 	protected $img_date;
 	private $_imgData;
+	public $comments;
+	public $user;
+	private $_likes;
 
 	public function __construct($params = [])
 	{
@@ -30,17 +33,23 @@ class ImageModel extends BaseModel
 			$this->_imgData = $params["img_data"];
 			$this->img_date = time();
 		}
+		$this->user = UserModel::findOne(["id" => $this->user_id]);
+		$this->_likes = count(LikeModel::findMany(["img_id" => $this->id]));
+		$this->comments = CommentModel::findMany(["img_id" => $this->id]);
 	}
 
-	public function getDate()
-	{
-		return $this->date_added;
-	}
+	public function getId() { return $this->id; }
 
-	protected function _tableName()
-	{
-		return "images";
-	}
+	public function getUserId() { return $this->UserId; }
+
+	public function getImgPath() { return $this->img_path; }
+
+	public function getDate() { return $this->img_date; }
+
+	public function getLikes() { return $this->_likes; }
+
+	protected function _tableName() {  return "images"; }
+
 	protected function _propertiesInDb()
 	{
 		return ["user_id", "img_path", "img_date"];

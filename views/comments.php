@@ -17,12 +17,12 @@
 		<img src="/public/img/user.png">
 	</a>
 	<div class="content">
-		<a class="author"><?= $comments[0]["user"]["username"] ?></a>
+		<a class="author"><?= $comments[0]->user->getUsername() ?></a>
 		<div class="metadata">
-			<span class="date"><?= $comments[0]["comment_date"] ?></span>
+			<span class="date"><?= $comments[0]->timeToString() ?></span>
 		</div>
 		<div class="text">
-			<?= $comments[0]["comment"] ?>
+			<?= $comments[0]->getComment() ?>
 		</div>
 	</div>
 </div>
@@ -35,12 +35,12 @@
 			$html .= '			<img src="/public/img/user.png">' . PHP_EOL;
 			$html .= '		</a>' . PHP_EOL;
 			$html .= '		<div class="content">' . PHP_EOL;
-			$html .= '			<a class="author">' . $comment["user"]["username"] . '</a>' . PHP_EOL;
+			$html .= '			<a class="author">' . $comment->user->getUsername() . '</a>' . PHP_EOL;
 			$html .= '			<div class="metadata">' . PHP_EOL;
-			$html .= '				<span class="date">' . $comment["comment_date"] . '</span>' . PHP_EOL;
+			$html .= '				<span class="date">' . $comment->timeToString() . '</span>' . PHP_EOL;
 			$html .= '			</div>' . PHP_EOL;
 			$html .= '			<div class="text">' . PHP_EOL;
-			$html .= '				' . $comment["comment"] . PHP_EOL;
+			$html .= '				' . $comment->getComment() . PHP_EOL;
 			$html .= '			</div>' . PHP_EOL;
 			$html .= '		</div>' . PHP_EOL;
 			$html .= '	</div>' . PHP_EOL;
