@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/03 22:48:02 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/08 12:47:46 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,8 @@ const getImageData = async () => {
 saveButton.addEventListener("click", (event) => {
 	getImageData().then(data => {
 		const formData = new FormData();
-		formData.append("data", data);
-		fetch('/edit/submit', {
+		formData.append("img_data", data);
+		fetch('/images', {
 			method: 'POST',
 			body: formData,
 		}).then((response) => {

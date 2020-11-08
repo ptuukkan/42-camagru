@@ -6,21 +6,23 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/11 21:10:35 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/03 22:59:29 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/08 19:12:35 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-const addLike = (image) => {
+const addLike = (target) => {
+	const image = target.parentElement.parentElement.parentElement;
 	const formData = new FormData();
 	formData.append("img_id", image.id);
-	fetch('/addlike', {
+	fetch('/likes', {
 		method: 'POST',
 		body: formData
 	}).then(response => {
 		if (response.ok) {
 			response.json().then(likes => {
 				const likesText = image.querySelector(".num-of-likes");
-				likesText.textContent = String(likes.likes + 1);
+				likesText.textContent = (likes);
+				target.classList.toggle("outline");
 			});
 		} else {
 			response.json().then(r => console.log(r));
@@ -31,7 +33,7 @@ const addLike = (image) => {
 const likeButtons = document.getElementsByClassName("like-button");
 for (let likeButton of likeButtons) {
 	likeButton.addEventListener("click", event => {
-		addLike(event.target.parentElement.parentElement.parentElement);
+		addLike(event.target);
 	});
 }
 
@@ -85,12 +87,12 @@ const createComment = (comment) => {
 				<img src="/public/img/user.png">
 			</a>
 			<div class="content">
-				<a class="author">${comment.user.username}</a>
+				<a class="author">${comment.comment_username}</a>
 				<div class="metadata">
 					<span class="date">${comment.comment_date}</span>
 				</div>
 				<div class="text">
-					${comment.comment}
+					${comment.comment_text}
 				</div>
 			</div>
 	`
@@ -103,8 +105,8 @@ const createComment = (comment) => {
 const uploadComment = async (comment, image) => {
 	const formData = new FormData();
 	formData.append("img_id", image.id);
-	formData.append("comment", comment);
-	fetch('/addcomment', {
+	formData.append("comment_text", comment);
+	fetch('/comments', {
 		method: 'POST',
 		body: formData
 	}).then(response => {

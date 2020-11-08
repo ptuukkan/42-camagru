@@ -22,7 +22,7 @@
 	</div>
 	<div class="content">
 		<span class="right floated">
-			<i class="heart outline like icon like-button"></i>
+			<i class="heart <?= ($image->isLiked()) ? "" : "outline " ?>like icon like-button"></i>
 			<span class="num-of-likes"><?= $image->getLikes() ?></span> likes
 		</span>
 		<i class="comment icon"></i>

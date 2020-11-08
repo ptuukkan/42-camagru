@@ -22,7 +22,7 @@
 			<span class="date"><?= $comments[0]->timeToString() ?></span>
 		</div>
 		<div class="text">
-			<?= $comments[0]->getComment() ?>
+			<?= $comments[0]->getCommentText() ?>
 		</div>
 	</div>
 </div>
@@ -40,7 +40,7 @@
 			$html .= '				<span class="date">' . $comment->timeToString() . '</span>' . PHP_EOL;
 			$html .= '			</div>' . PHP_EOL;
 			$html .= '			<div class="text">' . PHP_EOL;
-			$html .= '				' . $comment->getComment() . PHP_EOL;
+			$html .= '				' . $comment->getCommentText() . PHP_EOL;
 			$html .= '			</div>' . PHP_EOL;
 			$html .= '		</div>' . PHP_EOL;
 			$html .= '	</div>' . PHP_EOL;

@@ -35,26 +35,25 @@
 		</div>
 	</div>
 	<div class="four wide column centered">
-	<div class="ui segment">
-	<div class="ui divided items">
-  <div class="item">
-    <div class="image">
-      <img src="/images/wireframe/image.png">
-    </div>
-  </div>
-  <div class="item">
-    <div class="image">
-      <img src="/images/wireframe/image.png">
-    </div>
-  </div>
-  <div class="item">
-    <div class="image">
-      <img src="/images/wireframe/image.png">
-    </div>
-  </div>
-</div>
-	</div>
-
+	  <div class="ui segment">
+	    <div class="ui divided items">
+        <div class="item">
+          <div class="image">
+            <img src="/images/wireframe/image.png">
+          </div>
+        </div>
+        <div class="item">
+          <div class="image">
+            <img src="/images/wireframe/image.png">
+          </div>
+        </div>
+        <div class="item">
+          <div class="image">
+            <img src="/images/wireframe/image.png">
+          </div>
+        </div>
+      </div>
+	  </div>
 	</div>
 </div>
 <canvas id="canvas" style="display: none">

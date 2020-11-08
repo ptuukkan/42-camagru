@@ -43,9 +43,9 @@ class Application
 		$this->_router->post("/login", [UserController::class, "handleLogin"]);
 		$this->_router->post("/signup", [UserController::class, "handleSignup"]);
 		$this->_router->post("/profile", [UserController::class, "saveProfile"]);
-		$this->_router->post("/edit/submit", [ImageController::class, "savePhoto"]);
-		$this->_router->post("/addcomment", [ImageController::class, "addComment"]);
-		$this->_router->post("/addlike", [ImageController::class, "addLike"]);
+		$this->_router->post("/images", [ImageController::class, "addImage"]);
+		$this->_router->post("/comments", [ImageController::class, "addComment"]);
+		$this->_router->post("/likes", [ImageController::class, "handleLike"]);
 
 		$this->session = new Session();
 		self::$app = $this;

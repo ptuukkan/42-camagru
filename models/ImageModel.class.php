@@ -25,6 +25,8 @@ class ImageModel extends BaseModel
 	public $comments;
 	public $user;
 	private $_likes;
+	private $_liked = false;
+	private $_owner = false;
 
 	public function __construct($params = [])
 	{
@@ -34,8 +36,18 @@ class ImageModel extends BaseModel
 			$this->img_date = time();
 		}
 		$this->user = UserModel::findOne(["id" => $this->user_id]);
-		$this->_likes = count(LikeModel::findMany(["img_id" => $this->id]));
-		$this->comments = CommentModel::findMany(["img_id" => $this->id]);
+		$this->_likes = count(LikeModel::findMany([], ["img_id" => $this->id]));
+		$this->comments = CommentModel::findMany([], ["img_id" => $this->id]);
+		$this->_sortComments();
+		if (Application::$app->session->loggedIn) {
+			if (Application::$app->session->userId === $this->user_id) {
+				$this->_owner = true;
+			}
+			if (LikeModel::findOne(["id"], ["img_id" => $this->id, "user_id" => $this->user_id])) {
+				$this->_liked = true;
+			}
+		}
+
 	}
 
 	public function getId() { return $this->id; }
@@ -48,34 +60,15 @@ class ImageModel extends BaseModel
 
 	public function getLikes() { return $this->_likes; }
 
+	public function isOwner() { return $this->_owner; }
+
+	public function isLiked() { return $this->_liked; }
+
 	protected function _tableName() {  return "images"; }
 
 	protected function _propertiesInDb()
 	{
 		return ["user_id", "img_path", "img_date"];
-	}
-
-	public static function getImages()
-	{
-		$fields = ["id", "img_path", "img_date", "user_id"];
-		$images = self::findMany($fields);
-		$size = count($images);
-		for ($i = 0; $i < $size; $i++) {
-			$images[$i]["user"] = UserModel::findOne(["id" => $images[$i]["user_id"]],
-				["username"]);
-			$comments = CommentModel::findMany(["comment_date", "comment", "user_id"],
-				["img_id" => $images[$i]["id"]]);
-			usort($comments, function($first, $second) {
-				return $first["comment_date"] < $second["comment_date"];
-			});
-			$images[$i]["comments"] = $comments;
-			$comments_size = count($images[$i]["comments"]);
-			for ($n = 0; $n < $comments_size; $n++) {
-				$images[$i]["comments"][$n]["user"] = UserModel::findOne(["id" =>
-					$images[$i]["comments"][$n]["user_id"]], ["username"]);
-			}
-		}
-		return $images;
 	}
 
 	public function validate()
@@ -96,16 +89,26 @@ class ImageModel extends BaseModel
 		if (!in_array($imgType, $allowedTypes)) {
 			return false;
 		}
-		$this->img_path = "/public/img/uploads/" . uniqid("img_") . "." . $imgType;
+		$this->img_path = "public/img/uploads/" . uniqid("img_") . "." . $imgType;
 		$this->_imgData = $parts[1];
+		return true;
 	}
 
 	public function save()
 	{
 		parent::save();
-		if (!file_put_contents($this->img_path, $this->_imgData)) {
+		if (!@file_put_contents($this->img_path, base64_decode($this->_imgData))) {
 			$this->delete();
 			throw new HttpException("Cannot save image", 500, true);
+		}
+	}
+
+	private function _sortComments()
+	{
+		if (count($this->comments) > 1) {
+			usort($this->comments, function($first, $second) {
+				return $first->getDate() < $second->getDate();
+			});
 		}
 	}
 }

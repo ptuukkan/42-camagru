@@ -13,13 +13,14 @@
 
 class LikeModel extends BaseModel
 {
+	protected $id;
 	protected $user_id;
 	protected $img_id;
 
 	public function __construct($params = [])
 	{
 		if (!empty($params)) {
-			$this->img_id = $img_id;
+			$this->img_id = $params["img_id"];
 			$this->user_id = Application::$app->session->userId;
 		}
 	}
@@ -36,6 +37,6 @@ class LikeModel extends BaseModel
 
 	public function addLike($img_id)
 	{
-		
+
 	}
 }

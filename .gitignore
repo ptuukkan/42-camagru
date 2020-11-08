@@ -1,2 +1,4 @@
 public/img/uploads/*.png
+public/img/uploads/*.jpg
+public/img/uploads/*.jpeg
 test.php
