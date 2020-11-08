@@ -36,11 +36,6 @@ class Router
 		$this->_routes["post"][$path] = $callback;
 	}
 
-	public function del($path, $callback)
-	{
-		$this->_routes["del"][$path] = $callback;
-	}
-
 	private function _getCallback()
 	{
 		if (isset($this->_routes[$this->_request->method][$this->_request->path])) {

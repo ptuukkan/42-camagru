@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/11 21:10:35 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/08 19:12:35 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/08 23:10:20 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,13 @@ const uploadComment = async (comment, image) => {
 	}).then(response => {
 		if (response.ok) {
 			response.json().then(newComment => {
-				const comments = image.querySelector(".ui.comments");
+				let comments = image.querySelector(".ui.comments");
+				if (!comments) {
+					comments = document.createElement("div");
+					comments.classList.add("ui", "comments");
+					const showCommentsDiv = image.querySelector(".show-comments-div");
+					image.insertBefore(comments, showCommentsDiv);
+				}
 				comments.prepend(createComment(newComment));
 				const numOfComments = image.querySelector(".num-of-comments");
 				const i = Number(numOfComments.textContent);
@@ -127,11 +133,9 @@ for (let commentInput of commentInputs) {
 	commentInput.addEventListener("keyup", (event) => {
 		if (event.keyCode === 13 && event.target.value.length < 127 &&
 			event.target.value.length > 0) {
-				commentInput.parentElement.classList.add("loading");
 			uploadComment(event.target.value, commentInput.parentElement.parentElement.parentElement)
 			.then(res => {
 				event.target.value = "";
-				commentInput.parentElement.classList.remove("loading");
 			});
 		} else {
 			checkCommentOver(event.target);

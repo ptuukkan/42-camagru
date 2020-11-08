@@ -101,13 +101,13 @@ class ImageController extends BaseController
 			foreach ($image->comments as $comment) {
 				$comment->remove();
 			}
-			$likes = LikeModel::findOne([], ["img_id" => $image->getId()]);
+			$likes = LikeModel::findMany([], ["img_id" => $image->getId()]);
 			foreach ($likes as $like) {
 				$like->remove();
 			}
 			$image->remove();
 		} catch (Exception $e) {
-			throw new HttpException("Server error", 500, true);
+			throw new HttpException($e->getMessage(), 500, true);
 		}
 
 		echo json_encode($params["img_id"]);

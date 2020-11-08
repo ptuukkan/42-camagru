@@ -12,10 +12,12 @@
 /* ************************************************************************** */
 ?>
 
-<div class="ui fluid card ten wide column centered" id="<?= $image->getId() ?>">
+<div class="ui fluid card" id="<?= $image->getId() ?>">
 	<div class="content">
-		<div class="right floated meta"><?= date("Y-m-d H:i:s", $image->getDate()) ?></div>
-			<img class="ui avatar image" src="/public/img/user.png"> <?= $image->user->getUsername() ?>
+		<div class="right floated meta">
+			<?= date("Y-m-d H:i:s", $image->getDate()) ?>
+		</div>
+		<img class="ui avatar image" src="/public/img/user.png"> <?= $image->user->getUsername() ?>
 	</div>
 	<div class="image">
 		<img src="<?= $image->getImgPath() ?>">
@@ -34,10 +36,8 @@
 			<input type="text" placeholder="Add Comment..." class="comment-input">
 		</div>
 	</div>
-	<div class="ui comments">
-		<?= self::_printComments($image->comments) ?>
-	</div>
-	<div class="extra content">
+	<?= self::_printComments($image->comments) ?>
+	<div class="extra content show-comments-div">
 		<a class="show-comments " <?= (count($image->comments) > 1) ? '' : 'style="display: none"' ?>>
 			View all comments
 		</a>

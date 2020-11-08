@@ -12,6 +12,11 @@
 /* ************************************************************************** */
 ?>
 
-<div class="item">
-	<img class="ui fluid image" src="<?= $image->getImgPath() ?>">
+<div class="card thumbcard" id="<?= $image->getId() ?>">
+	<div class="image">
+		<img src="<?= $image->getImgPath() ?>">
+	</div>
+	<div class="extra content" style="text-align: center">
+		<button class="ui button negative">Delete</button>
+	</div>
 </div>

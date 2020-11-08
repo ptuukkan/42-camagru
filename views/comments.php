@@ -11,7 +11,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 ?>
-
+<div class="ui comments">
 <div class="comment">
 	<a class="avatar">
 		<img src="/public/img/user.png">
@@ -50,3 +50,4 @@
 	}
 ?>
 
+</div>

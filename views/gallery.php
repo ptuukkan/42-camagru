@@ -12,11 +12,13 @@
 /* ************************************************************************** */
 ?>
 <div class="ui grid">
+	<div class="ten wide column centered">
 	<?php
 		foreach ($params as $image) {
 		 	echo self::_printImage($image);
 		}
 	?>
+	</div>
 	<div class="ten wide column centered">
 		<div class="ui pagination menu right floated">
 			<a href="/?page=1">
