@@ -43,7 +43,7 @@ class ImageModel extends BaseModel
 			if (Application::$app->session->userId === $this->user_id) {
 				$this->_owner = true;
 			}
-			if (LikeModel::findOne(["id"], ["img_id" => $this->id, "user_id" => $this->user_id])) {
+			if (LikeModel::findOne(["img_id" => $this->id, "user_id" => $this->user_id])) {
 				$this->_liked = true;
 			}
 		}
@@ -98,9 +98,17 @@ class ImageModel extends BaseModel
 	{
 		parent::save();
 		if (!@file_put_contents($this->img_path, base64_decode($this->_imgData))) {
-			$this->delete();
+			$this->remove();
 			throw new HttpException("Cannot save image", 500, true);
 		}
+	}
+
+	public function remove()
+	{
+		if (file_exists($this->img_path)) {
+			unlink($this->img_path);
+		}
+		parent::remove();
 	}
 
 	private function _sortComments()

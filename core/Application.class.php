@@ -44,6 +44,7 @@ class Application
 		$this->_router->post("/signup", [UserController::class, "handleSignup"]);
 		$this->_router->post("/profile", [UserController::class, "saveProfile"]);
 		$this->_router->post("/images", [ImageController::class, "addImage"]);
+		$this->_router->del("/images", [ImageController::class, "deleteImage"]);
 		$this->_router->post("/comments", [ImageController::class, "addComment"]);
 		$this->_router->post("/likes", [ImageController::class, "handleLike"]);
 

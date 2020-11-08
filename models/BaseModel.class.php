@@ -113,7 +113,7 @@ abstract class BaseModel
 		}
 	}
 
-	public function delete()
+	public function remove()
 	{
 		$db = Application::$app->db;
 		$table = static::_tableName();

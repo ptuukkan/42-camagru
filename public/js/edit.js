@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/08 12:47:46 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/08 21:16:51 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,17 @@ const getImageData = async () => {
 	return data;
 }
 
+const addThumbnail = (image) => {
+	const markup = `
+		<img class="ui fluid image" src="${image.img_path}">
+	`;
+	const div = document.createElement('div');
+	div.classList.add("item");
+	div.innerHTML = markup;
+	const thumbnailList = document.querySelector('.ui.divided.items');
+	thumbnailList.prepend(div);
+}
+
 saveButton.addEventListener("click", (event) => {
 	getImageData().then(data => {
 		const formData = new FormData();
@@ -160,9 +171,12 @@ saveButton.addEventListener("click", (event) => {
 			method: 'POST',
 			body: formData,
 		}).then((response) => {
-			// if (!response.ok) {
-				response.json().then(r => console.log(r))
-			// }
+			response.json().then(image => {
+				if (response.ok) {
+					addThumbnail(image);
+				}
+				console.log(image)
+			})
 		});
 	})
 });

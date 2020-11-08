@@ -111,7 +111,7 @@ class UserController extends BaseController
 	public function saveProfile($params)
 	{
 		$newUser;
-		$user;
+		$user = new UserModel();
 		$errors = [];
 		$status = "success";
 
@@ -130,28 +130,30 @@ class UserController extends BaseController
 				throw new Exception("Server error");
 			}
 			if (!$user->verifyPassword($newUser->getPassword())) {
-				$newUser->setError("current_password", "Current password is invalid");
+				$user->setError("current_password", "Current password is invalid");
 			}
 			if ($newUser->getEmail() !== $user->getEmail()) {
-				$newUser->validateEmail();
+				$user->setEmail($newUser->getEmail());
+				$user->validateEmail();
 			}
 			if ($newUser->getUsername() !== $user->getUsername()) {
-				$newUser->validateUsername();
+				$user->setUsername($newUser->getUsername());
+				$user->validateUsername();
 			}
 			if ($newUser->getNewPassword()) {
-				$newUser->setPassword($newUser->getNewPassword());
-				$newUser->validatePassword();
-				$newUser->validatePwConfirm();
-				$newUser->setPasswordChanged();
+				$user->setPassword($newUser->getNewPassword());
+				$user->setPwConfirm($newUser->getPwConfirm());
+				$user->validatePassword();
+				$user->validatePwConfirm();
+				$user->setPasswordChanged();
 			}
-			$newUser->setId($user->getId());
-			if (!$newUser->hasErrors()) {
-				$newUser->save();
+			if (!$user->hasErrors()) {
+				$user->save();
 			}
 		} catch (Exception $e) {
-			$newUser->setError("global", $e->getMessage());
+			$user->setError("global", $e->getMessage());
 		}
-		if ($newUser->hasErrors()) {
+		if ($user->hasErrors()) {
 			$status = "error";
 		} else {
 			unset($params["password"]);
@@ -160,7 +162,7 @@ class UserController extends BaseController
 		}
 		View::renderView("main", "profile", [
 			"values" => $params,
-			"errors" => $newUser->getErrors(),
+			"errors" => $user->getErrors(),
 			"status" => $status
 		]);
 	}

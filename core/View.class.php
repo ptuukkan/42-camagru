@@ -51,6 +51,14 @@ class View
 		echo $html;
 	}
 
+	private static function _printThumbnail($image)
+	{
+		ob_start();
+		require "views/thumbnail.php";
+		$html = ob_get_clean();
+		echo $html;
+	}
+
 	private static function _printComments($comments)
 	{
 		if (empty($comments)) {

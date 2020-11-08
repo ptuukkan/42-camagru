@@ -37,10 +37,23 @@ class ImageController extends BaseController
 
 	public function edit($params)
 	{
-		// if (!Application::$app->session->loggedIn) {
-		// 		throw new Exception("Unauthorized", 401);
-		// }
-		View::renderView("main", "edit");
+		$images;
+
+		if (!Application::$app->session->loggedIn) {
+				throw new Exception("Unauthorized", 401);
+		}
+		try {
+			$images = ImageModel::findMany([], [
+				"user_id" => Application::$app->session->userId
+			]);
+			usort($images, function($first, $second) {
+				return $first->getDate() < $second->getDate();
+			});
+		} catch (Exception $e) {
+			throw new HttpException($e->getMessage(), 500);
+		}
+
+		View::renderView("main", "edit", $images);
 	}
 
 	public function addImage($params)
@@ -67,6 +80,37 @@ class ImageController extends BaseController
 			"img_id" => $image->getId(),
 			"img_path" => $image->getImgPath()
 		]);
+	}
+
+	public function deleteImage($params)
+	{
+		$image;
+		$likes;
+
+		if (!Application::$app->session->loggedIn) {
+			throw new HttpException("Not authorized", 401, true);
+		}
+		if (!isset($params["img_id"])) {
+			throw new HttpException("Bad request", 400, true);
+		}
+		try {
+			$image = ImageModel::findOne(["id" => $params["img_id"]]);
+			if (!$image->isOwner()) {
+				throw new HttpException("Not authorized", 401, true);
+			}
+			foreach ($image->comments as $comment) {
+				$comment->remove();
+			}
+			$likes = LikeModel::findOne([], ["img_id" => $image->getId()]);
+			foreach ($likes as $like) {
+				$like->remove();
+			}
+			$image->remove();
+		} catch (Exception $e) {
+			throw new HttpException("Server error", 500, true);
+		}
+
+		echo json_encode($params["img_id"]);
 	}
 
 	public function addComment($params)
@@ -120,7 +164,7 @@ class ImageController extends BaseController
 					"user_id" => Application::$app->session->userId,
 					"img_id" => $params["img_id"]
 				]);
-				$like->delete();
+				$like->remove();
 				$imgLikes--;
 			} else {
 				$like = new LikeModel($params);

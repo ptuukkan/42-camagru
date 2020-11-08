@@ -35,23 +35,27 @@ class UserModel extends BaseModel
 			$this->password = $params["password"] ?? "";
 			$this->_passwordConfirm = $params["password_confirm"] ?? "";
 			$this->_newPassword = $params["new_password"] ?? "";
-			$this->notifications = ($params["notifications"]) ?? false;
+			$this->notifications = ($params["notifications"]) ?? true;
 		}
 	}
 
 	public function getId() { return $this->id; }
 
-	public function setId($id) { $this->id = $id; }
-
 	public function getEmail() { return $this->email; }
 
+	public function setEmail($email) { $this->email = $email; }
+
 	public function getUsername() { return $this->username; }
+
+	public function setUsername($username) { $this->username = $username ;}
 
 	public function getToken() { return $this->token; }
 
 	public function getPassword() { return $this->password; }
 
 	public function setPassword($password) { $this->password = $password; }
+
+	public function setPwConfirm($password) { $this->_passwordConfirm = $password; }
 
 	public function getNewPassword() { return $this->_newPassword; }
 
