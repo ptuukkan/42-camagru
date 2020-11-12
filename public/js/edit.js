@@ -6,9 +6,12 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/08 23:59:36 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/12 22:27:57 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { enableStickers, disableStickers, getStickers } from './stickers.js';
+import { addThumbCard } from './thumbnails.js';
 
 const canvas = document.querySelector("#canvas");
 const context = canvas.getContext("2d");
@@ -91,6 +94,7 @@ const webCamMode = () => {
 			return uploadMode();
 		});
 
+	enableStickers();
 	clearPhoto();
 }
 
@@ -108,6 +112,15 @@ const setupUpload = () => {
 			if (saveButton.classList.contains("disabled")) {
 				saveButton.classList.remove("disabled");
 			}
+			enableStickers();
+		} else {
+			photo.removeAttribute('src');
+			photo.style.display = "none";
+			uploadIcon.style.display = "";
+			if (!saveButton.classList.contains("disabled")) {
+				saveButton.classList.add("disabled");
+			}
+			disableStickers();
 		}
 	})
 }
@@ -115,12 +128,12 @@ const setupUpload = () => {
 const uploadMode = () => {
 	mode = 2;
 	console.log("upload mode");
-	mode = 2;
 	takePhotoButton.style.display = "none";
 	video.style.display = "none";
 	video.srcObject = null;
 	uploadButton.style.display = "";
 	uploadIcon.style.display = "";
+	disableStickers();
 	clearPhoto();
 }
 
@@ -150,54 +163,12 @@ const getImageData = async () => {
 	return data;
 }
 
-const delThumbCard = (id) => {
-	const thumbCard = document.getElementById(id);
-	if (thumbCard) {
-		thumbCard.remove();
-	}
-}
-
-const deleteEvent = (id) => {
-	console.log(id);
-	const formData = new FormData();
-	formData.append("img_id", id);
-	fetch('/deleteimage', {
-		method: 'POST',
-		body: formData,
-	}).then((response) => {
-		response.json().then(img_id => {
-			if (response.ok) {
-				delThumbCard(img_id);
-			}
-			console.log(img_id)
-		});
-	});
-}
-
-const addThumbCard = (image) => {
-	const markup = `
-		<div class="image">
-			<img src="${image.img_path}">
-		</div>
-		<div class="extra content" style="text-align: center">
-			<button class="ui button negative">Delete</button>
-		</div>
-	`;
-	const div = document.createElement('div');
-	div.classList.add("card", "thumbCard");
-	div.id = image.id;
-	div.innerHTML = markup;
-	div.querySelector("button").addEventListener("click", (event) => {
-		deleteEvent(image.img_id);
-	});
-	const thumbnailList = document.querySelector('.ui.one.cards');
-	thumbnailList.prepend(div);
-}
-
 saveButton.addEventListener("click", (event) => {
+	const stickers = getStickers();
 	getImageData().then(data => {
 		const formData = new FormData();
 		formData.append("img_data", data);
+		formData.append("stickers", stickers);
 		fetch('/images', {
 			method: 'POST',
 			body: formData,
@@ -211,14 +182,6 @@ saveButton.addEventListener("click", (event) => {
 		});
 	})
 });
-
-const thumbCards = document.getElementsByClassName("thumbcard");
-for (let thumbCard of thumbCards) {
-	const deleteButton = thumbCard.querySelector("button");
-	deleteButton.addEventListener("click", (event) => {
-		deleteEvent(thumbCard.id);
-	});
-}
 
 
 setupUpload();

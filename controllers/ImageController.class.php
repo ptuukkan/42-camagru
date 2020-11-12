@@ -40,7 +40,7 @@ class ImageController extends BaseController
 		$images;
 
 		if (!Application::$app->session->loggedIn) {
-				throw new Exception("Unauthorized", 401);
+				throw new HttpException("Unauthorized", 401);
 		}
 		try {
 			$images = ImageModel::findMany([], [
