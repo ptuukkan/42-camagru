@@ -6,11 +6,11 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/12 22:27:57 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/13 19:03:28 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { enableStickers, disableStickers, getStickers } from './stickers.js';
+import { enableStickers, disableStickers, getStickers, clearStickers } from './stickers.js';
 import { addThumbCard } from './thumbnails.js';
 
 const canvas = document.querySelector("#canvas");
@@ -18,7 +18,6 @@ const context = canvas.getContext("2d");
 const photo = document.querySelector("#photo");
 const video = document.querySelector("#video");
 const takePhotoButton = document.querySelector("#takephoto");
-const width = document.querySelector("#webcam-container").clientWidth;
 const webCamToggle = document.querySelector("#webcamtoggle");
 const uploadButton = document.querySelector("#uploadphoto");
 const uploadIcon = document.querySelector("#uploadicon");
@@ -27,6 +26,7 @@ const saveButton = document.querySelector("#savephoto");
 let blobImage;
 let streaming = false;
 let height;
+let width;
 let mode;
 
 const clearPhoto = () => {
@@ -41,6 +41,7 @@ const setupWebCam = () => {
 	console.log("adding canplay event listener");
 	video.addEventListener("canplay", (event) => {
 		console.log("canplay listener triggered");
+		width = document.querySelector("#webcam-container").clientWidth;
 		if (!streaming) {
 			console.log("not streaming");
 			height = video.videoHeight / (video.videoWidth / width);
@@ -81,6 +82,7 @@ const webCamMode = () => {
 	uploadIcon.style.display = "none";
 	video.style.display = "";
 	takePhotoButton.style.display = "";
+	photo.removeAttribute("src");
 
 	console.log("getting user media");
 	navigator.mediaDevices.getUserMedia({ video: true, audio: false })
@@ -177,13 +179,22 @@ saveButton.addEventListener("click", (event) => {
 				if (response.ok) {
 					addThumbCard(image);
 				}
-				console.log(image)
-			})
+				clearStickers();
+				if (mode === 1) {
+					webCamMode();
+				} else {
+					uploadMode();
+				}
+			});
 		});
-	})
+	});
 });
 
+document.addEventListener('DOMContentLoaded', (event) => {
+	setupUpload();
+	setupWebCam();
+	webCamMode();
+}, false);
 
-setupUpload();
-setupWebCam();
-webCamMode();
+
+

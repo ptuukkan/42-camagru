@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 16:13:12 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/12 22:30:14 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/13 18:34:57 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,11 @@ for (let sticker of stickers) {
 }
 
 export const disableStickers = () => {
+	clearStickers();
 	for (let sticker of stickers) {
 		if (!sticker.classList.contains("disabled")) {
 			sticker.classList.add("disabled");
-		}
-		sticker.querySelector("input").disabled = true;
-		if (sticker.querySelector("input").checked) {
-			removeSticker(sticker.querySelector("input").id);
-			sticker.querySelector("input").checked = false;
+			sticker.querySelector("input").disabled = true;
 		}
 	}
 	stickersEnabled = false;
@@ -148,4 +145,13 @@ export const getStickers = () => {
 		};
 	});
 	return (JSON.stringify(stickers));
+}
+
+export const clearStickers = () => {
+	for (let sticker of stickers) {
+		if (sticker.querySelector("input").checked) {
+			removeSticker(sticker.querySelector("input").id);
+			sticker.querySelector("input").checked = false;
+		}
+	}
 }

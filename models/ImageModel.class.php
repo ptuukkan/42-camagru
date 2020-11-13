@@ -27,6 +27,8 @@ class ImageModel extends BaseModel
 	private $_likes;
 	private $_liked = false;
 	private $_owner = false;
+	private $_stickers;
+	private $_image;
 
 	public function __construct($params = [])
 	{
@@ -34,6 +36,7 @@ class ImageModel extends BaseModel
 			$this->user_id = Application::$app->session->userId;
 			$this->_imgData = $params["img_data"];
 			$this->img_date = time();
+			$this->_stickers = json_decode($params["stickers"]);
 		}
 		$this->user = UserModel::findOne(["id" => $this->user_id]);
 		$this->_likes = count(LikeModel::findMany([], ["img_id" => $this->id]));
@@ -91,13 +94,21 @@ class ImageModel extends BaseModel
 		}
 		$this->img_path = "public/img/uploads/" . uniqid("img_") . "." . $imgType;
 		$this->_imgData = $parts[1];
+		$validStickers = ["beer", "crown", "fire", "poop", "zzz"];
+		if (!empty($this->_stickers)) {
+			foreach ($this->_stickers as $sticker) {
+				if (!in_array($sticker->id, $validStickers)) {
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 
 	public function save()
 	{
 		parent::save();
-		if (!@file_put_contents($this->img_path, base64_decode($this->_imgData))) {
+		if (!imagepng($this->_image, $this->img_path)) {
 			$this->remove();
 			throw new HttpException("Cannot save image", 500, true);
 		}
@@ -117,6 +128,20 @@ class ImageModel extends BaseModel
 			usort($this->comments, function($first, $second) {
 				return $first->getDate() < $second->getDate();
 			});
+		}
+	}
+
+	public function addStickers()
+	{
+		$this->_image = imagecreatefromstring(base64_decode($this->_imgData));
+		foreach ($this->_stickers as $sticker) {
+			$filepath = "public/img/stickers/" . $sticker->id . ".png";
+			list($width, $height) = getimagesize($filepath);
+			$stickerImage = imagecreatefrompng($filepath);
+			imagecopyresampled($this->_image, $stickerImage,
+				$sticker->offsetLeft, $sticker->offsetTop, 0, 0,
+				$sticker->width, $sticker->height, $width, $height);
+			imagedestroy($stickerImage);
 		}
 	}
 }

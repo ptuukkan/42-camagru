@@ -71,6 +71,7 @@ class ImageController extends BaseController
 			if (!$image->validate()) {
 				throw new HttpException("Bad request, img is not valid", 400, true);
 			}
+			$image->addStickers();
 			$image->save();
 		} catch (PDOException $e) {
 			throw new HttpException($e->getMessage(), 500, true);
