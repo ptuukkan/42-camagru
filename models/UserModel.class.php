@@ -59,6 +59,8 @@ class UserModel extends BaseModel
 
 	public function getNewPassword() { return $this->_newPassword; }
 
+	public function getNotifications() { return $this->notifications; }
+
 	public function getErrors() { return $this->_errors; }
 
 	public function hasErrors()

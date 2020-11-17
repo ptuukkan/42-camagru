@@ -134,6 +134,9 @@ class ImageController extends BaseController
 		} catch (PDOException $e) {
 			throw new HttpException($e->getMessage(), 500, true);
 		}
+		if ($comment->user->getNotifications()) {
+			$this->_sendNotification($comment);
+		}
 
 		echo json_encode([
 			"comment_text" => $comment->getCommentText(),
@@ -177,5 +180,29 @@ class ImageController extends BaseController
 		}
 
 		echo json_encode($imgLikes);
+	}
+
+	private function _sendNotification($comment)
+	{
+		$email = $comment->user->getEmail();
+		$username = $comment->user->getUsername();
+		$subject = "$username commented your photo";
+		$message = "
+		<html>
+		<head>
+			<title>Your photo has new comments</title>
+		</head>
+		<body>
+			<p>" . $comment->getCommentText() . "</p>
+			<p>By $username on " . date("Y-m-d H:i:s", $comment->getDate()) . "</p>
+		</body>
+		</html>
+		";
+		$headers[] = 'MIME-Version: 1.0';
+		$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+		$headers[] = 'To: ' . $username . ' <' . $email . '>';
+		$headers[] = 'From: Camagru <no-reply@camagru.com>';
+
+		mail($email, $subject, $message, implode("\r\n", $headers));
 	}
 }

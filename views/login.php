@@ -33,6 +33,7 @@
 		id="password"
 		value=<?= (isset($params["values"]["password"])) ? $params["values"]["password"] : "" ?>
 	>
+	<a href="/resetpassword">Reset password</a>
   </div>
   <?= self::_printFieldErrors("global", $params) ?>
   <button class="ui button primary" type="submit" id="submit">Login</button>
