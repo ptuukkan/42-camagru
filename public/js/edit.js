@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/13 19:03:28 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/17 20:10:10 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ const uploadButton = document.querySelector("#uploadphoto");
 const uploadIcon = document.querySelector("#uploadicon");
 const uploadInput = document.querySelector("#upload");
 const saveButton = document.querySelector("#savephoto");
+const loader = document.querySelector(".loader");
 let blobImage;
 let streaming = false;
 let height;
@@ -38,12 +39,12 @@ const clearPhoto = () => {
 }
 
 const setupWebCam = () => {
-	console.log("adding canplay event listener");
-	video.addEventListener("canplay", (event) => {
-		console.log("canplay listener triggered");
+	video.addEventListener("canplay", (_event) => {
 		width = document.querySelector("#webcam-container").clientWidth;
+		if (loader.classList.contains("active")) {
+			loader.classList.remove("active");
+		}
 		if (!streaming) {
-			console.log("not streaming");
 			height = video.videoHeight / (video.videoWidth / width);
 			if (isNaN(height)) {
 				height = width / (4 / 3);
@@ -76,21 +77,21 @@ const setupWebCam = () => {
 }
 
 const webCamMode = () => {
-	console.log("webcam mode");
 	mode = 1;
 	uploadButton.style.display = "none";
 	uploadIcon.style.display = "none";
 	video.style.display = "";
 	takePhotoButton.style.display = "";
 	photo.removeAttribute("src");
-
-	console.log("getting user media");
+	if (!loader.classList.contains("active")) {
+		loader.classList.add("active");
+	}
 	navigator.mediaDevices.getUserMedia({ video: true, audio: false })
 		.then((stream) => {
 			video.srcObject = stream;
 			video.play();
 		})
-		.catch((error) => {
+		.catch((_error) => {
 			webCamToggle.checked = false;
 			webCamToggle.disabled = true;
 			return uploadMode();
@@ -101,7 +102,7 @@ const webCamMode = () => {
 }
 
 const setupUpload = () => {
-	uploadButton.addEventListener("click", (event) => {
+	uploadButton.addEventListener("click", (_event) => {
 		document.querySelector("#upload").click();
 	});
 
@@ -129,7 +130,6 @@ const setupUpload = () => {
 
 const uploadMode = () => {
 	mode = 2;
-	console.log("upload mode");
 	takePhotoButton.style.display = "none";
 	video.style.display = "none";
 	video.srcObject = null;
@@ -165,7 +165,7 @@ const getImageData = async () => {
 	return data;
 }
 
-saveButton.addEventListener("click", (event) => {
+saveButton.addEventListener("click", (_event) => {
 	const stickers = getStickers();
 	getImageData().then(data => {
 		const formData = new FormData();
@@ -190,7 +190,7 @@ saveButton.addEventListener("click", (event) => {
 	});
 });
 
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', (_event) => {
 	setupUpload();
 	setupWebCam();
 	webCamMode();

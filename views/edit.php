@@ -63,14 +63,15 @@
 		<div class="ui fluid card">
 			<div class="content">
 				<div class="right floated extra content">
-			<div class="ui toggle checkbox">
-			<input type="checkbox" name="webcam" id="webcamtoggle" checked>
-			<label>Use WebCam</label>
-			</div>
-		</div>
+					<div class="ui toggle checkbox">
+						<input type="checkbox" name="webcam" id="webcamtoggle" checked>
+						<label>Use WebCam</label>
+					</div>
+				</div>
 			</div>
 			<div class="image" id="webcam-container" style="text-align: center">
-				<video id="video">Video stream not available.</video>
+				<div class="ui loader"></div>
+				<video id="video"></video>
 				<i class="upload icon huge" style="margin: 50px; display: none" id="uploadicon"></i>
 				<img id="photo" style="display: none">
 			</div>
