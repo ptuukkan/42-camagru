@@ -20,19 +20,34 @@ class ImageController extends BaseController
 	public function index($params)
 	{
 		$images;
+		$total;
+		$page = $params["page"] ?? 1;
+
+		if ($page <= 0) {
+			throw new HttpException("Bad request", 400);
+		}
 
 		try {
 			$images = ImageModel::findMany();
 			usort($images, function($first, $second) {
 				return $first->getDate() < $second->getDate();
 			});
-		} catch (Exception $e) {
+			$total = count($images);
+			if ($page * 5 - $total > 4) {
+				throw new HttpException("Bad request", 400);
+			}
+			$images = array_slice($images, ($page - 1) * 5, 5);
+		} catch (PDOException $e) {
 			$message["header"] = "Error";
 			$message["body"] = $e->getMessage();
 			View::renderMessage("main", "error", $message);
 		}
 
-		View::renderView("main", "gallery", $images);
+		View::renderView("main", "gallery", [
+			"images" => $images,
+			"page" => $page,
+			"total" => $total
+		]);
 	}
 
 	public function edit($params)
@@ -63,7 +78,7 @@ class ImageController extends BaseController
 		if (!Application::$app->session->loggedIn) {
 			throw new HttpException("Not authorized", 401, true);
 		}
-		if (!isset($params["img_data"])) {
+		if (!isset($params["img_data"]) || !isset($params["img_width"])) {
 			throw new HttpException("Bad request, img data not set", 400, true);
 		}
 		try {
@@ -71,12 +86,12 @@ class ImageController extends BaseController
 			if (!$image->validate()) {
 				throw new HttpException("Bad request, img is not valid", 400, true);
 			}
-			$image->addStickers();
+			$image->constructImage();
 			$image->save();
 		} catch (PDOException $e) {
 			throw new HttpException($e->getMessage(), 500, true);
 		}
-
+		header('Content-Type: application/json');
 		echo json_encode([
 			"img_id" => $image->getId(),
 			"img_path" => $image->getImgPath()
@@ -111,12 +126,14 @@ class ImageController extends BaseController
 			throw new HttpException($e->getMessage(), 500, true);
 		}
 
+		header('Content-Type: application/json');
 		echo json_encode($params["img_id"]);
 	}
 
 	public function addComment($params)
 	{
 		$comment;
+		$image;
 
 		if (!Application::$app->session->loggedIn) {
 			throw new HttpException("Not authorized", 401, true);
@@ -126,7 +143,8 @@ class ImageController extends BaseController
 			throw new HttpException("Bad request", 400, true);
 		}
 		try {
-			if (!ImageModel::findOne(["id" => $params["img_id"]])) {
+			$image = ImageModel::findOne(["id" => $params["img_id"]]);
+			if (!$image) {
 				throw new HttpException("Bad request, img not found", 400, true);
 			}
 			$comment = new CommentModel($params);
@@ -135,7 +153,7 @@ class ImageController extends BaseController
 			throw new HttpException($e->getMessage(), 500, true);
 		}
 		if ($comment->user->getNotifications()) {
-			$this->_sendNotification($comment);
+			$this->_sendNotification($comment, $image);
 		}
 
 		echo json_encode([
@@ -182,9 +200,9 @@ class ImageController extends BaseController
 		echo json_encode($imgLikes);
 	}
 
-	private function _sendNotification($comment)
+	private function _sendNotification($comment, $image)
 	{
-		$email = $comment->user->getEmail();
+		$email = $image->user->getEmail();
 		$username = $comment->user->getUsername();
 		$subject = "$username commented your photo";
 		$message = "

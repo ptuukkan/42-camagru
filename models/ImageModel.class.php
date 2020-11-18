@@ -29,12 +29,14 @@ class ImageModel extends BaseModel
 	private $_owner = false;
 	private $_stickers;
 	private $_image;
+	private $_imgWidth;
 
 	public function __construct($params = [])
 	{
 		if (!empty($params)) {
 			$this->user_id = Application::$app->session->userId;
 			$this->_imgData = $params["img_data"];
+			$this->_imgWidth = $params["img_width"];
 			$this->img_date = time();
 			$this->_stickers = json_decode($params["stickers"]);
 		}
@@ -131,9 +133,18 @@ class ImageModel extends BaseModel
 		}
 	}
 
-	public function addStickers()
+	public function constructImage()
 	{
 		$this->_image = imagecreatefromstring(base64_decode($this->_imgData));
+		$this->_image = imagescale($this->_image, $this->_imgWidth);
+		$width = imagesx($this->_image);
+		$height = imagesy($this->_image);
+		$baseimage = imagecreatetruecolor($width, $height);
+		$color = imagecolorallocate($baseimage, 255, 255, 255);
+		imagefill($baseimage, 0, 0, $color);
+		imagecopy($baseimage, $this->_image, 0, 0, 0, 0, $width, $height);
+		$this->_image = $baseimage;
+
 		foreach ($this->_stickers as $sticker) {
 			$filepath = "public/img/stickers/" . $sticker->id . ".png";
 			list($width, $height) = getimagesize($filepath);

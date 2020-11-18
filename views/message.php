@@ -12,7 +12,7 @@
 /* ************************************************************************** */
 ?>
 
-<div class="ui <?= $type ?> message">
+<div class="ui <?= $message["status"] ?> message">
   <div class="header">
     <?= $message["header"] ?>
   </div>

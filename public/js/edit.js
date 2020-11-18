@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/17 20:10:10 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/18 19:56:41 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,7 @@ const setupWebCam = () => {
 		}
 	});
 
-	console.log("adding take photo event listener");
-	takePhotoButton.addEventListener("click", (event) => {
+	takePhotoButton.addEventListener("click", (_event) => {
 		if (width && height) {
 		  canvas.width = width;
 		  canvas.height = height;
@@ -135,6 +134,9 @@ const uploadMode = () => {
 	video.srcObject = null;
 	uploadButton.style.display = "";
 	uploadIcon.style.display = "";
+	if (loader.classList.contains("active")) {
+		loader.classList.remove("active");
+	}
 	disableStickers();
 	clearPhoto();
 }
@@ -166,26 +168,40 @@ const getImageData = async () => {
 }
 
 saveButton.addEventListener("click", (_event) => {
+	saveButton.classList.add("loading");
 	const stickers = getStickers();
 	getImageData().then(data => {
 		const formData = new FormData();
 		formData.append("img_data", data);
+		formData.append("img_width", photo.clientWidth);
 		formData.append("stickers", stickers);
 		fetch('/images', {
 			method: 'POST',
 			body: formData,
-		}).then((response) => {
-			response.json().then(image => {
-				if (response.ok) {
-					addThumbCard(image);
+		})
+		.then((response) => {
+			if (response.ok) {
+				let contentType = response.headers.get("content-type");
+				if (contentType && contentType.includes("application/json")) {
+					return response.json();
 				}
-				clearStickers();
-				if (mode === 1) {
-					webCamMode();
-				} else {
-					uploadMode();
-				}
-			});
+			}
+			throw new Error("Something went wrong with image upload!");
+		})
+		.then((image) => addThumbCard(image))
+		.catch((error) => console.log(error))
+		.finally(() => {
+			saveButton.classList.remove("loading");
+			clearStickers();
+			if (mode === 1) {
+				webCamMode();
+			} else {
+				uploadMode();
+			}
+			if (!saveButton.classList.contains("disabled")) {
+				saveButton.classList.add("disabled");
+			}
+			uploadInput.value = "";
 		});
 	});
 });

@@ -13,21 +13,9 @@
 
 class View
 {
-	public static $verbose = false;
-
-	public function __construct($layout, $view)
-	{
-		if (self::$verbose) {
-			print("View instance constructed" . PHP_EOL);
-		}
-	}
-
 	private static function _loggedIn()
 	{
-		if (Application::$app->session->loggedIn) {
-			return true;
-		}
-		return false;
+		return Application::$app->session->loggedIn;
 	}
 
 	private static function _printFieldErrors($field, $params)
@@ -71,6 +59,37 @@ class View
 		echo $html;
 	}
 
+	private static function _printPagination($params)
+	{
+		$hasNext = false;
+		$hasPrev = false;
+		$html = "";
+		$prevPage = $params["page"] - 1;
+		$nextPage = $params["page"] + 1;
+
+		if ($params["page"] > 1) {
+			$hasPrev = true;
+		}
+		if ($params["page"] * 5 < $params["total"]) {
+			$hasNext = true;
+		}
+		if ($hasPrev) {
+			$html .= '<div class="ui pagination menu">' . PHP_EOL;
+			$html .= '	<a href="/?page=' . $prevPage . '">' . PHP_EOL;
+			$html .= '		<div class="item">Previous Page</div>' . PHP_EOL;
+			$html .= '	</a>' . PHP_EOL;
+			$html .= '</div>' . PHP_EOL;
+		}
+		if ($hasNext) {
+			$html .= '<div class="ui pagination menu right floated">' . PHP_EOL;
+			$html .= '	<a href="/?page=' . $nextPage . '">' . PHP_EOL;
+			$html .= '		<div class="item">Next Page</div>' . PHP_EOL;
+			$html .= '	</a>' . PHP_EOL;
+			$html .= '</div>' . PHP_EOL;
+		}
+		echo $html;
+	}
+
 	public static function renderView($layout, $view, $params = [])
 	{
 		ob_start();
@@ -82,7 +101,7 @@ class View
 		echo str_replace("{{view}}", $view, $layout);
 	}
 
-	public static function renderMessage($layout, $type, $message)
+	public static function renderMessage($layout, $message)
 	{
 		ob_start();
 		require_once "views/layouts/" . $layout . ".php";
@@ -91,12 +110,5 @@ class View
 		require_once "views/message.php";
 		$message = ob_get_clean();
 		echo str_replace("{{view}}", $message, $layout);
-	}
-
-	public function __destruct()
-	{
-		if (self::verbose) {
-			print("View instance destructed" . PHP_EOL);
-		}
 	}
 }

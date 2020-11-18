@@ -20,6 +20,7 @@ class UserController extends BaseController
 	{
 		if (Application::$app->session->loggedIn) {
 			header("Location: /");
+			return;
 		}
 		View::renderView("main", "login");
 	}
@@ -28,14 +29,17 @@ class UserController extends BaseController
 	{
 		if (Application::$app->session->loggedIn) {
 			header("Location: /");
+			return;
 		}
 		View::renderView("main", "signup");
 	}
 
 	public function logout($params)
 	{
-		Application::$app->session->logout();
-		header("Location: /");
+		if (Application::$app->session->loggedIn) {
+			Application::$app->session->logout();
+			header("Location: /");
+		}
 	}
 
 	public function profile($params)
@@ -58,6 +62,10 @@ class UserController extends BaseController
 
 	public function handleLogin($params)
 	{
+		if (Application::$app->session->loggedIn) {
+			header("Location: /");
+			return;
+		}
 		try {
 			if (!isset($params["username"]) || !isset($params["password"])) {
 				throw new Exception("Login failed");
@@ -86,6 +94,10 @@ class UserController extends BaseController
 
 	public function handleSignup($params)
 	{
+		if (Application::$app->session->loggedIn) {
+			header("Location: /");
+			return;
+		}
 		$user = new UserModel($params);
 		$user->setPasswordChanged();
 		try {
@@ -103,9 +115,10 @@ class UserController extends BaseController
 			return;
 		}
 		$this->_sendVerificationEmail($user);
-		$message["header"] = "Success";
+		$message["status"] = "success";
+ 		$message["header"] = "Success";
 		$message["body"] = "Before logging in, please verify your email by clicking the link we have sent to you.";
-		View::renderMessage("main", "success", $message);
+		View::renderMessage("main", $message);
 	}
 
 	public function saveProfile($params)
@@ -169,26 +182,32 @@ class UserController extends BaseController
 
 	public function verifyEmail($params)
 	{
-		$status;
 		$user;
+
+		if (Application::$app->session->loggedIn) {
+			header("Location: /");
+			return;
+		}
 
 		if (!isset($params["token"]) || strlen($params["token"]) !== 100 ||
 			!ctype_xdigit($params["token"])) {
-		 	throw new HttpException("Bad request", 400);
+		 	throw new HttpException("Invalid token or user already verified", 400);
 		}
 		try {
 			$user = UserModel::findOne(["token" => $params["token"]]);
 			if (!$user) {
-				throw new HttpException("Bad request", 400);
+				throw new HttpException("Invalid token or user already verified", 400);
 			}
 			$user->setActive();
+			$user->clearToken();
 			$user->save();
 		} catch (Exception $e) {
 			throw new HttpException("Server error", 500);
 		}
+		$message["status"] = "success";
 		$message["header"] = "Success";
 		$message["body"] = "Email address successfully verified, you can now log in.";
-		View::renderMessage("main", "success", $message);
+		View::renderMessage("main", $message);
 	}
 
 	private function _sendVerificationEmail($user)
@@ -214,6 +233,126 @@ class UserController extends BaseController
 		$headers[] = 'From: Camagru <no-reply@camagru.com>';
 
 		mail($email, $subject, $message, implode("\r\n", $headers));
+	}
+
+	public function resetPassword($params)
+	{
+		if (Application::$app->session->loggedIn) {
+			header("Location: /");
+			return;
+		}
+		View::renderView("main", "resetpassword");
+	}
+
+	public function sendResetPassword($params)
+	{
+		$message = [];
+
+		if (Application::$app->session->loggedIn) {
+			header("Location: /");
+			return;
+		}
+		$message["status"] = "success";
+		$message["header"] = "Success";
+		$message["body"] = "Password reset email has been sent to your email address";
+		if (isset($params["email"]) && filter_var($params["email"], FILTER_VALIDATE_EMAIL)) {
+			try {
+				$user = UserModel::findOne(["email" => $params["email"]]);
+				if ($user && $user->isActive()) {
+					$user->generateToken();
+					$user->save();
+					$this->_sendResetPasswordEmail($user);
+				}
+			} catch (Exception $e) {
+				$message["status"] = "error";
+				$message["header"] = "Oops";
+				$message["body"] = "Something went wrong, please try again";
+			}
+
+		}
+		View::renderMessage("main", $message);
+	}
+
+	private function _sendResetPasswordEmail($user)
+	{
+		$token = $user->getToken();
+		$email = $user->getEmail();
+		$username = $user->getUsername();
+		$subject = 'Reset your password';
+		$message = "
+		<html>
+		<head>
+			<title>Camagru password reset</title>
+		</head>
+		<body>
+			<p>Please set up your new password by clicking the link below</p>
+			<a href='localhost/newpassword?token=" . $token . "'>Reset Password</a>
+		</body>
+		</html>
+		";
+		$headers[] = 'MIME-Version: 1.0';
+		$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+		$headers[] = 'To: ' . $username . ' <' . $email . '>';
+		$headers[] = 'From: Camagru <no-reply@camagru.com>';
+
+		mail($email, $subject, $message, implode("\r\n", $headers));
+	}
+
+	public function newPasswordForm($params)
+	{
+		if (Application::$app->session->loggedIn) {
+			header("Location: /");
+			return;
+		}
+		if (!isset($params["token"]) || strlen($params["token"]) !== 100 ||
+			!ctype_xdigit($params["token"])) {
+		 	throw new HttpException("Invalid token", 400);
+		}
+		View::renderView("main", "newpassword");
+	}
+
+	public function newPassword($params)
+	{
+		$user = new UserModel();
+
+		if (Application::$app->session->loggedIn) {
+			header("Location: /");
+			return;
+		}
+		if (!isset($_GET["token"]) || strlen($_GET["token"]) !== 100 ||
+			!ctype_xdigit($_GET["token"])) {
+			throw new HttpException("Invalid token", 400);
+		}
+		try {
+			$user = UserModel::findOne(["token" => $_GET["token"]]);
+			if (!$user) {
+				throw new HttpException("Invalid token", 400);
+			}
+			$user->setPassword($params["password"]);
+			$user->setPwConfirm($params["password_confirm"]);
+			$user->validatePassword();
+			$user->validatePwConfirm();
+			if (!$user->hasErrors()) {
+				$user->setPasswordChanged();
+				$user->clearToken();
+				$user->save();
+			}
+		} catch (PDOException $e) {
+			$user->setError("global", $e->getMessage());
+		}
+		if ($user->hasErrors()) {
+			View::renderView("main", "newpassword", [
+				"values" => $params,
+				"errors" => $user->getErrors(),
+				"status" => "error"
+			]);
+		} else {
+			View::renderMessage("main", [
+				"status" => "success",
+				"header" => "Success",
+				"body" => "Password changed!"
+			]);
+		}
 
 	}
 }

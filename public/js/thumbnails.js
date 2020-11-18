@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 22:14:44 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/12 22:18:52 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/18 17:50:35 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,26 @@ const delThumbCard = (id) => {
 	}
 }
 
-const deleteEvent = (id) => {
+const deleteEvent = async (id) => {
 	const formData = new FormData();
 	formData.append("img_id", id);
-	fetch('/deleteimage', {
-		method: 'POST',
-		body: formData,
-	}).then((response) => {
-		response.json().then(img_id => {
-			if (response.ok) {
+	try {
+		const response = await fetch('/deleteimage', {
+			method: 'POST',
+			body: formData,
+		})
+		if (response.ok) {
+			let contentType = response.headers.get("content-type");
+			if (contentType && contentType.includes("application/json")) {
+				const img_id = await response.json();
 				delThumbCard(img_id);
+				return;
 			}
-		});
-	});
+		}
+		throw new Error("Something went wrong with delete request");
+	} catch (error) {
+		console.log(error);
+	}
 }
 
 export const addThumbCard = (image) => {
@@ -43,10 +50,17 @@ export const addThumbCard = (image) => {
 	`;
 	const div = document.createElement('div');
 	div.classList.add("card", "thumbCard");
-	div.id = image.id;
+	div.id = image.img_id;
 	div.innerHTML = markup;
 	div.querySelector("button").addEventListener("click", (event) => {
-		deleteEvent(image.img_id);
+		if (!event.target.classList.contains("loading")) {
+			event.target.classList.add("loading");
+		}
+		deleteEvent(thumbCard.id).then(() => {
+			if (event.target.classList.contains("loading")) {
+				event.target.classList.remove("loading");
+			}
+		});
 	});
 	const thumbnailList = document.querySelector('.ui.one.cards');
 	thumbnailList.prepend(div);
@@ -57,6 +71,13 @@ const thumbCards = document.getElementsByClassName("thumbcard");
 for (let thumbCard of thumbCards) {
 	const deleteButton = thumbCard.querySelector("button");
 	deleteButton.addEventListener("click", (event) => {
-		deleteEvent(thumbCard.id);
+		if (!event.target.classList.contains("loading")) {
+			event.target.classList.add("loading");
+		}
+		deleteEvent(thumbCard.id).then(() => {
+			if (event.target.classList.contains("loading")) {
+				event.target.classList.remove("loading");
+			}
+		});
 	});
 }

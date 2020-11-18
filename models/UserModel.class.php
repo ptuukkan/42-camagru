@@ -51,6 +51,8 @@ class UserModel extends BaseModel
 
 	public function getToken() { return $this->token; }
 
+	public function clearToken() { $this->token = ""; }
+
 	public function getPassword() { return $this->password; }
 
 	public function setPassword($password) { $this->password = $password; }
@@ -94,7 +96,13 @@ class UserModel extends BaseModel
 
 	public function generateToken()
 	{
-		$this->token = bin2hex(random_bytes(50));
+		while (true) {
+			$this->token = bin2hex(random_bytes(50));
+			if (!UserModel::findOne(["token" => $this->token], ["id"])) {
+				break;
+			}
+		}
+
 	}
 
 	public static function getCurrentUser()

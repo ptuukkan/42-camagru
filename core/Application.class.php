@@ -40,6 +40,8 @@ class Application
 		$this->_router->get("/signup", [UserController::class, "signup"]);
 		$this->_router->get("/profile", [UserController::class, "profile"]);
 		$this->_router->get("/verify", [UserController::class, "verifyEmail"]);
+		$this->_router->get("/resetpassword", [UserController::class, "resetPassword"]);
+		$this->_router->get("/newpassword", [UserController::class, "newPasswordForm"]);
 		$this->_router->post("/login", [UserController::class, "handleLogin"]);
 		$this->_router->post("/signup", [UserController::class, "handleSignup"]);
 		$this->_router->post("/profile", [UserController::class, "saveProfile"]);
@@ -47,6 +49,8 @@ class Application
 		$this->_router->post("/deleteimage", [ImageController::class, "deleteImage"]);
 		$this->_router->post("/comments", [ImageController::class, "addComment"]);
 		$this->_router->post("/likes", [ImageController::class, "handleLike"]);
+		$this->_router->post("/resetpassword", [UserController::class, "sendResetPassword"]);
+		$this->_router->post("/newpassword", [UserController::class, "newPassword"]);
 
 		$this->session = new Session();
 		self::$app = $this;
@@ -67,9 +71,10 @@ class Application
 			if ($e->json) {
 				echo $e->getJsonError();
 			} else {
+				$message["status"] = "error";
 				$message["header"] = $e->getCode();
 				$message["body"] = $e->getMessage();
-				View::renderMessage("main", "error", $message);
+				View::renderMessage("main", $message);
 			}
 		}
 	}

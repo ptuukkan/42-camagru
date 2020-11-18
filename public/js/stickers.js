@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 16:13:12 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/13 18:34:57 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/18 17:38:16 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,6 @@ const removeSticker = (id) => {
 export const getStickers = () => {
 	const stickers = selectedStickers.map(s => {
 		const sticker = document.querySelector(`#${s}`);
-		console.dir(sticker);
 		return {
 			id: s.replace("-clone", ""),
 			width: sticker.width,
