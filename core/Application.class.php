@@ -20,7 +20,6 @@ require_once "core/HttpException.class.php";
 
 class Application
 {
-	public static $verbose = false;
 	private $_request;
 	private $_router;
 	private $_controller;
@@ -54,10 +53,6 @@ class Application
 
 		$this->session = new Session();
 		self::$app = $this;
-
-		if (self::$verbose) {
-			print("Application instance constructed" . PHP_EOL);
-		}
 	}
 
 	public function run()
@@ -76,13 +71,6 @@ class Application
 				$message["body"] = $e->getMessage();
 				View::renderMessage("main", $message);
 			}
-		}
-	}
-
-	public function __destruct()
-	{
-		if (self::$verbose) {
-			print("Application instance destructed" . PHP_EOL);
 		}
 	}
 }

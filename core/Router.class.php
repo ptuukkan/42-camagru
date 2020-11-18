@@ -13,17 +13,12 @@
 
 class Router
 {
-	public static $verbose = false;
 	private $_request;
 	private $_routes;
 
 	public function __construct($request)
 	{
 		$this->_request = $request;
-
-		if (self::$verbose) {
-			print("Router instance constructed" . PHP_EOL);
-		}
 	}
 
 	public function get($path, $callback)
@@ -59,33 +54,5 @@ class Router
 			throw new HttpException("Page not found", 404);
 		}
 		return $controller;
-	}
-
-	public function __destruct()
-	{
-		if (self::$verbose) {
-			print("Router instance destructed" . PHP_EOL);
-		}
-	}
-
-	private function _routesToString()
-	{
-		$str = "get:" . PHP_EOL;
-		foreach ($this->_routes["get"] as $route => $controller) {
-			$str .= $route . " => " . $controller . PHP_EOL;
-		}
-		$str .= "post:" . PHP_EOL;
-		foreach ($this->_routes["post"] as $route => $controller) {
-			$str .= $route . " => " . $controller . PHP_EOL;
-		}
-		return $str;
-	}
-
-	public function __toString()
-	{
-		$str = "Router(" . PHP_EOL;
-		$str .= "Routes: " . $this->_routesToString() . PHP_EOL;
-		$str .= ")";
-		return $str;
 	}
 }

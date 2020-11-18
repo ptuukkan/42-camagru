@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/11 21:10:35 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/08 23:10:20 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/18 22:39:54 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,25 @@ const addLike = (target) => {
 	fetch('/likes', {
 		method: 'POST',
 		body: formData
-	}).then(response => {
+	})
+	.then(response => {
 		if (response.ok) {
-			response.json().then(likes => {
-				const likesText = image.querySelector(".num-of-likes");
-				likesText.textContent = (likes);
-				target.classList.toggle("outline");
-			});
-		} else {
-			response.json().then(r => console.log(r));
+			let contentType = response.headers.get("content-type");
+			if (contentType && contentType.includes("application/json")) {
+				return response.json();
+			}
+		} else if (response.status === 401) {
+			window.location.href = "/login";
 		}
+		throw new Error();
+	})
+	.then((likes) => {
+		const likesText = image.querySelector(".num-of-likes");
+		likesText.textContent = (likes);
+		target.classList.toggle("outline");
+	})
+	.catch(_error => {
+
 	});
 }
 
@@ -109,22 +118,31 @@ const uploadComment = async (comment, image) => {
 	fetch('/comments', {
 		method: 'POST',
 		body: formData
-	}).then(response => {
+	})
+	.then(response => {
 		if (response.ok) {
-			response.json().then(newComment => {
-				let comments = image.querySelector(".ui.comments");
-				if (!comments) {
-					comments = document.createElement("div");
-					comments.classList.add("ui", "comments");
-					const showCommentsDiv = image.querySelector(".show-comments-div");
-					image.insertBefore(comments, showCommentsDiv);
-				}
-				comments.prepend(createComment(newComment));
-				const numOfComments = image.querySelector(".num-of-comments");
-				const i = Number(numOfComments.textContent);
-				numOfComments.textContent = String(i + 1);
-			});
+			let contentType = response.headers.get("content-type");
+			if (contentType && contentType.includes("application/json")) {
+				return response.json();
+			}
 		}
+		throw new Error();
+	})
+	.then((newComment) => {
+		let comments = image.querySelector(".ui.comments");
+			if (!comments) {
+				comments = document.createElement("div");
+				comments.classList.add("ui", "comments");
+				const showCommentsDiv = image.querySelector(".show-comments-div");
+				image.insertBefore(comments, showCommentsDiv);
+			}
+			comments.prepend(createComment(newComment));
+			const numOfComments = image.querySelector(".num-of-comments");
+			const i = Number(numOfComments.textContent);
+			numOfComments.textContent = String(i + 1);
+	})
+	.catch((_error) => {
+
 	});
 }
 
@@ -134,7 +152,7 @@ for (let commentInput of commentInputs) {
 		if (event.keyCode === 13 && event.target.value.length < 127 &&
 			event.target.value.length > 0) {
 			uploadComment(event.target.value, commentInput.parentElement.parentElement.parentElement)
-			.then(res => {
+			.then(() => {
 				event.target.value = "";
 			});
 		} else {

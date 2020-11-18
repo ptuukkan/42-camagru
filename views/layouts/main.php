@@ -38,5 +38,10 @@
 	<div class="ui container">
 		{{view}}
 	</div>
+	<div class="ui inverted vertical footer segment">
+		<div class="ui container footer-container">
+			&copy; ptuukkan 2020
+		</div>
+	</div>
 </body>
 </html>

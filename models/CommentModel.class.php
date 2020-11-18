@@ -24,7 +24,7 @@ class CommentModel extends BaseModel
 	{
 		if (!empty($params)) {
 			$this->img_id = $params["img_id"];
-			$this->comment_text = filter_var($params["comment_text"], FILTER_SANITIZE_SPECIAL_CHARS);
+			$this->comment_text = $params["comment_text"];
 			$this->comment_date = time();
 			$this->user_id = Application::$app->session->userId;
 		}

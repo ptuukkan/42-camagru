@@ -26,6 +26,7 @@ class HttpException extends Exception
 
 	public function getJsonError()
 	{
+		header('Content-Type: application/json');
 		return json_encode(["error" => $this->message]);
 	}
 }

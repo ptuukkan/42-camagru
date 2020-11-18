@@ -48,7 +48,7 @@ class ImageModel extends BaseModel
 			if (Application::$app->session->userId === $this->user_id) {
 				$this->_owner = true;
 			}
-			if (LikeModel::findOne(["img_id" => $this->id, "user_id" => $this->user_id])) {
+			if (LikeModel::findOne(["img_id" => $this->id, "user_id" => Application::$app->session->userId])) {
 				$this->_liked = true;
 			}
 		}
@@ -57,7 +57,7 @@ class ImageModel extends BaseModel
 
 	public function getId() { return $this->id; }
 
-	public function getUserId() { return $this->UserId; }
+	public function getUserId() { return $this->user_id; }
 
 	public function getImgPath() { return $this->img_path; }
 

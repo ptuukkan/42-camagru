@@ -13,7 +13,6 @@
 
 class Session
 {
-	public static $verbose = false;
 	public $userId = null;
 	public $loggedIn = false;
 
@@ -23,9 +22,6 @@ class Session
 		$this->loadSession();
 		if ($this->userId) {
 			$this->loggedIn = true;
-		}
-		if (self::$verbose) {
-			print(static::class . " instance constructed" . PHP_EOL);
 		}
 	}
 
@@ -49,21 +45,5 @@ class Session
 		$this->loggedIn = false;
 		$this->userId = null;
 		unset($_SESSION["logged_on_user"]);
-	}
-
-	public function __toString()
-	{
-		$str = "Session(" . PHP_EOL;
-		$str .= "userId: " . $this->userId . PHP_EOL;
-		$str .= "loggndIN: " . $this->loggedIn . PHP_EOL;
-		$str .= ")";
-		return $str;
-	}
-
-	public function __destruct()
-	{
-		if (self::$verbose) {
-			print(static::class . " instance destructed" . PHP_EOL);
-		}
 	}
 }

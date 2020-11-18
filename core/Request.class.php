@@ -13,7 +13,6 @@
 
 class Request
 {
-	public static $verbose = false;
 	public $method;
 	public $path;
 	public $params = [];
@@ -24,32 +23,21 @@ class Request
 		$request_uri = strtolower(filter_var($_SERVER["REQUEST_URI"], FILTER_SANITIZE_URL));
 		$array = explode("?", $request_uri);
 		if ($this->method === "get") {
-			$this->params = $_GET;
+			$this->params = $this->_sanitizeParams($_GET);
 		} else if ($this->method === "post") {
-			$this->params = $_POST;
+			$this->params = $this->_sanitizeParams($_POST);
 		}
-
 		$this->path = $array[0] ?? "/";
-		if (self::$verbose) {
-			print("Request instance constructed" . PHP_EOL);
-		}
 	}
 
-	public function __destruct()
+	private function _sanitizeParams($params)
 	{
-		if (self::$verbose) {
-			print("Request instance destructed" . PHP_EOL);
+		$newParams = [];
+		foreach ($params as $key => $value) {
+			$key = filter_var($key, FILTER_SANITIZE_SPECIAL_CHARS);
+			$value = filter_var($value, FILTER_SANITIZE_SPECIAL_CHARS);
+			$newParams[$key] = $value;
 		}
-	}
-
-	public function __toString()
-	{
-		$str = "Request(" . PHP_EOL;
-		$str .= "method: " . $this->method . PHP_EOL;
-		$str .= "path: " . $this->path . PHP_EOL;
-		$str .= "action: " . $this->action . PHP_EOL;
-		$str .= "params: " . implode(";", (array)$this->params) . PHP_EOL;
-		$str .= ")";
-		return $str;
+		return $newParams;
 	}
 }

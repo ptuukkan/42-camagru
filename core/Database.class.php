@@ -16,7 +16,6 @@ class Database
 	private $_pdo;
 	private $_statement;
 
-
 	public function __construct()
 	{
 		require_once "config/database.php";

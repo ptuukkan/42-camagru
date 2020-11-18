@@ -55,7 +55,8 @@ class ImageController extends BaseController
 		$images;
 
 		if (!Application::$app->session->loggedIn) {
-				throw new HttpException("Unauthorized", 401);
+			header("Location: /login");
+			return;
 		}
 		try {
 			$images = ImageModel::findMany([], [
@@ -152,10 +153,12 @@ class ImageController extends BaseController
 		} catch (PDOException $e) {
 			throw new HttpException($e->getMessage(), 500, true);
 		}
-		if ($comment->user->getNotifications()) {
+		if ($comment->user->getNotifications() &&
+			$comment->getUserId() !== $image->getUserId()) {
 			$this->_sendNotification($comment, $image);
 		}
 
+		header('Content-Type: application/json');
 		echo json_encode([
 			"comment_text" => $comment->getCommentText(),
 			"comment_date" => $comment->timeToString(),
@@ -196,7 +199,7 @@ class ImageController extends BaseController
 		} catch (PDOException $e) {
 			throw new HttpException($e->getMessage(), 500, true);
 		}
-
+		header('Content-Type: application/json');
 		echo json_encode($imgLikes);
 	}
 

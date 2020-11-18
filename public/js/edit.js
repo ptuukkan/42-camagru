@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/18 19:56:41 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/11/18 22:41:50 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,10 +186,11 @@ saveButton.addEventListener("click", (_event) => {
 					return response.json();
 				}
 			}
-			throw new Error("Something went wrong with image upload!");
+			throw new Error();
 		})
 		.then((image) => addThumbCard(image))
-		.catch((error) => console.log(error))
+		.catch((_error) => {
+		})
 		.finally(() => {
 			saveButton.classList.remove("loading");
 			clearStickers();

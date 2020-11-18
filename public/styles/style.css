@@ -6,3 +6,21 @@
 .ui.checkbox.sticker img {
 	cursor: pointer;
 }
+
+.ui.inverted.vertical.footer.segment {
+	margin-top: 10px;
+}
+
+body {
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
+}
+
+.ui.container {
+	flex: 1;
+}
+
+.footer-container {
+	text-align: center;
+}

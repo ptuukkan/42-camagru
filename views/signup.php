@@ -21,6 +21,7 @@
       name="email"
       id="email"
       placeholder="Email address"
+      required
       value=<?= (isset($params["values"]["email"])) ? $params["values"]["email"] : "" ?>
     >
 	  <?= self::_printFieldErrors("email", $params) ?>
@@ -32,6 +33,7 @@
       name="username"
       id="username"
       placeholder="Username"
+      required
       value=<?= (isset($params["values"]["username"])) ? $params["values"]["username"] : "" ?>
     >
     <?= self::_printFieldErrors("username", $params) ?>
@@ -43,6 +45,7 @@
       name="password"
       id="password"
       placeholder="Password"
+      required
       value=<?= (isset($params["values"]["password"])) ? $params["values"]["password"] : "" ?>
     >
     <?= self::_printFieldErrors("password", $params) ?>
@@ -54,6 +57,7 @@
       name="password_confirm"
       id="password_confirm"
       placeholder="Confirm Password"
+      required
       value=<?= (isset($params["values"]["password_confirm"])) ? $params["values"]["password_confirm"] : "" ?>
     >
     <?= self::_printFieldErrors("password_confirm", $params) ?>

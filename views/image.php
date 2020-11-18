@@ -33,7 +33,13 @@
 	<div class="extra content">
 		<div class="ui large transparent left icon input" style="width: 100%">
 			<i class="comment outline icon"></i>
-			<input type="text" placeholder="Add Comment..." class="comment-input">
+			<input
+				type="text"
+				placeholder="Add Comment..."
+				class="comment-input"
+				value="<?= (Application::$app->session->loggedIn) ? "" : "Please login to comment" ?>"
+				<?= (Application::$app->session->loggedIn) ? "" : "disabled" ?>
+			>
 		</div>
 	</div>
 	<?= self::_printComments($image->comments) ?>
