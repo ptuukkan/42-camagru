@@ -59,6 +59,8 @@ class UserModel extends BaseModel
 
 	public function setPwConfirm($password) { $this->_passwordConfirm = $password; }
 
+	public function getPwConfirm() { return $this->_passwordConfirm; }
+
 	public function getNewPassword() { return $this->_newPassword; }
 
 	public function getNotifications() { return $this->notifications; }
@@ -103,14 +105,6 @@ class UserModel extends BaseModel
 			}
 		}
 
-	}
-
-	public static function getCurrentUser()
-	{
-		if (!Application::$app->session->loggedIn) {
-			return null;
-		}
-		return self::findOne(["id" => Application::$app->session->userId]);
 	}
 
 	public function verifyPassword($password)
@@ -189,7 +183,7 @@ class UserModel extends BaseModel
 			$this->validatePassword();
 			$this->validatePwConfirm();
 		} catch (Exception $e) {
-			$this->setError("global", "Server error");
+			$this->setError("global", "Internal server error");
 		}
 		if (!empty($this->_errors)) {
 			throw new Exception();

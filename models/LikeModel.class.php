@@ -34,9 +34,4 @@ class LikeModel extends BaseModel
 	{
 		return ["user_id", "img_id"];
 	}
-
-	public function addLike($img_id)
-	{
-
-	}
 }

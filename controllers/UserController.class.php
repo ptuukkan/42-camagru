@@ -79,7 +79,7 @@ class UserController extends BaseController
 			}
 		} catch (Exception $e) {
 			if ($e instanceof PDOException) {
-				$errors["global"][] = "Server error";
+				$errors["global"][] = "Internal server error";
 			} else {
 				$errors["global"][] = $e->getMessage();
 			}
@@ -107,7 +107,7 @@ class UserController extends BaseController
 		} catch (Exception $e) {
 			$errors = $user->getErrors();
 			if ($e instanceof PDOException) {
-				$errors["global"][] = $e->getMessage();
+				$errors["global"][] = "Internal server error";
 			}
 			View::renderView("main", "signup", [
 				"values" => $params, "errors" => $errors
@@ -140,7 +140,7 @@ class UserController extends BaseController
 		try {
 			$user = UserModel::findOne(["id" => Application::$app->session->userId]);
 			if (!$user) {
-				throw new Exception("Server error");
+				throw new Exception("Internal server error");
 			}
 			if (!$user->verifyPassword($newUser->getPassword())) {
 				$user->setError("current_password", "Current password is invalid");
@@ -201,8 +201,8 @@ class UserController extends BaseController
 			$user->setActive();
 			$user->clearToken();
 			$user->save();
-		} catch (Exception $e) {
-			throw new HttpException("Server error", 500);
+		} catch (PDOException $e) {
+			throw new HttpException("Internal server error", 500);
 		}
 		$message["status"] = "success";
 		$message["header"] = "Success";
@@ -319,9 +319,15 @@ class UserController extends BaseController
 			header("Location: /");
 			return;
 		}
-		if (!isset($_GET["token"]) || strlen($_GET["token"]) !== 100 ||
-			!ctype_xdigit($_GET["token"])) {
+		$token = "";
+		if (isset($_GET["token"])) {
+			$token = filter_var($_GET["token"], FILTER_SANITIZE_SPECIAL_CHARS);
+		}
+		if (strlen($token !== 100 || !ctype_xdigit($token))) {
 			throw new HttpException("Invalid token", 400);
+		}
+		if (!isset($params["password"]) || !isset($params["password_confirm"])) {
+			throw new HttpException("Bad request", 400);
 		}
 		try {
 			$user = UserModel::findOne(["token" => $_GET["token"]]);
@@ -338,7 +344,7 @@ class UserController extends BaseController
 				$user->save();
 			}
 		} catch (PDOException $e) {
-			$user->setError("global", $e->getMessage());
+			$user->setError("global", "Internal server error");
 		}
 		if ($user->hasErrors()) {
 			View::renderView("main", "newpassword", [

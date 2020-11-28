@@ -39,8 +39,6 @@ class CommentModel extends BaseModel
 
 	public function getUserId() { return $this->user_id; }
 
-	public function getImgId() { return $this->img_id; }
-
 	protected function _tableName()
 	{
 		return "comments";

@@ -60,10 +60,7 @@ function create()
 		user_id INT NOT NULL
 	);";
 	$pdo->prepare($sql)->execute();
-
-
-	echo "DB Schema created" . PHP_EOL;
-
+	echo "success";
 }
 
 function destroy()
@@ -72,23 +69,15 @@ function destroy()
 	$pdo = connect();
 	$sql = "DROP DATABASE IF EXISTS $DB_DBNAME";
 	$pdo->prepare($sql)->execute();
-	echo "DB Schema destroyed" . PHP_EOL;
-
 }
 
-try {
-	if ($argc === 1 || $argv[1] === "-i") {
-		destroy();
-		create();
-	} else if ($argc === 2 && $argv[1] === "-d") {
-		destroy();
-	} else if ($argc === 2 && $argv[1] === "-r") {
-		destroy();
-		create();
-	}
-} catch (Exception $e) {
-	echo $e->getMessage() . PHP_EOL;
+if ($argc === 1 || $argv[1] === "-i") {
+	create();
+} else if ($argc === 2 && $argv[1] === "-d") {
+	destroy();
+} else if ($argc === 2 && $argv[1] === "-r") {
+	destroy();
+	create();
 }
-
 
 ?>

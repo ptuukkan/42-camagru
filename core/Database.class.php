@@ -19,7 +19,22 @@ class Database
 	public function __construct()
 	{
 		require_once "config/database.php";
-		$this->_pdo = new PDO($DB_DSN, $DB_USER, $DB_PASSWORD, $DB_OPTIONS);
+		try {
+			$this->_pdo = new PDO($DB_DSN, $DB_USER, $DB_PASSWORD, $DB_OPTIONS);
+		} catch (Exception $e) {
+			if ($e->getCode() === 1049) {
+				try {
+					if (exec('php config/setup.php') !== "success") {
+						throw new HttpException("Internal server error", 500);
+					}
+					$this->_pdo = new PDO($DB_DSN, $DB_USER, $DB_PASSWORD, $DB_OPTIONS);
+				} catch (Exception $e) {
+					throw new HttpException("Internal server error", 500);
+				}
+			} else {
+				throw new HttpException("Internal server error", 500);
+			}
+		}
 	}
 
 	public function prepare($sql)

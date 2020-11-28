@@ -33,14 +33,12 @@ class ImageController extends BaseController
 				return $first->getDate() < $second->getDate();
 			});
 			$total = count($images);
-			if ($page * 5 - $total > 4) {
+			if ($total != 0 && $page * 5 - $total > 4) {
 				throw new HttpException("Bad request", 400);
 			}
 			$images = array_slice($images, ($page - 1) * 5, 5);
 		} catch (PDOException $e) {
-			$message["header"] = "Error";
-			$message["body"] = $e->getMessage();
-			View::renderMessage("main", "error", $message);
+			throw new HttpException("Internal server error", 500);
 		}
 
 		View::renderView("main", "gallery", [
@@ -66,7 +64,7 @@ class ImageController extends BaseController
 				return $first->getDate() < $second->getDate();
 			});
 		} catch (Exception $e) {
-			throw new HttpException($e->getMessage(), 500);
+			throw new HttpException("Internal server error", 500);
 		}
 
 		View::renderView("main", "edit", $images);
@@ -90,7 +88,7 @@ class ImageController extends BaseController
 			$image->constructImage();
 			$image->save();
 		} catch (PDOException $e) {
-			throw new HttpException($e->getMessage(), 500, true);
+			throw new HttpException("Internal server error", 500, true);
 		}
 		header('Content-Type: application/json');
 		echo json_encode([
@@ -123,8 +121,8 @@ class ImageController extends BaseController
 				$like->remove();
 			}
 			$image->remove();
-		} catch (Exception $e) {
-			throw new HttpException($e->getMessage(), 500, true);
+		} catch (PDOException $e) {
+			throw new HttpException("Internal server error", 500, true);
 		}
 
 		header('Content-Type: application/json');
@@ -151,7 +149,7 @@ class ImageController extends BaseController
 			$comment = new CommentModel($params);
 			$comment->save();
 		} catch (PDOException $e) {
-			throw new HttpException($e->getMessage(), 500, true);
+			throw new HttpException("Internal server error", 500, true);
 		}
 		if ($comment->user->getNotifications() &&
 			$comment->getUserId() !== $image->getUserId()) {
@@ -189,15 +187,17 @@ class ImageController extends BaseController
 					"user_id" => Application::$app->session->userId,
 					"img_id" => $params["img_id"]
 				]);
-				$like->remove();
-				$imgLikes--;
+				if ($like) {
+					$like->remove();
+					$imgLikes--;
+				}
 			} else {
 				$like = new LikeModel($params);
 				$like->save();
 				$imgLikes++;
 			}
 		} catch (PDOException $e) {
-			throw new HttpException($e->getMessage(), 500, true);
+			throw new HttpException("Internal server error", 500, true);
 		}
 		header('Content-Type: application/json');
 		echo json_encode($imgLikes);
