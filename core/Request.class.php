@@ -34,8 +34,28 @@ class Request
 	{
 		$newParams = [];
 		foreach ($params as $key => $value) {
-			$key = filter_var($key, FILTER_SANITIZE_SPECIAL_CHARS);
-			$value = filter_var($value, FILTER_SANITIZE_SPECIAL_CHARS);
+			if ($key === "stickers") {
+				$key = filter_var($key, FILTER_SANITIZE_SPECIAL_CHARS);
+				$origValue = json_decode($value, true);
+				$filteredValue = [];
+				foreach ($origValue as $sticker) {
+					$filteredValue[] = filter_var_array($sticker, [
+						'id'   => FILTER_SANITIZE_SPECIAL_CHARS,
+						'width'     => [ 'filter' => FILTER_VALIDATE_INT,
+									   'flags'  => FILTER_NULL_ON_FAILURE ],
+						'height'     => [ 'filter' => FILTER_VALIDATE_INT,
+									   'flags'  => FILTER_NULL_ON_FAILURE ],
+						'offsetLeft'     => [ 'filter' => FILTER_VALIDATE_INT,
+									   'flags'  => FILTER_NULL_ON_FAILURE ],
+						'offsetTop'     => [ 'filter' => FILTER_VALIDATE_INT,
+									   'flags'  => FILTER_NULL_ON_FAILURE ],
+					], true);
+				}
+				$value = $filteredValue;
+			} else {
+				$key = filter_var($key, FILTER_SANITIZE_SPECIAL_CHARS);
+				$value = filter_var($value, FILTER_SANITIZE_SPECIAL_CHARS);
+			}
 			$newParams[$key] = $value;
 		}
 		return $newParams;

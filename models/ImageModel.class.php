@@ -38,7 +38,7 @@ class ImageModel extends BaseModel
 			$this->_imgData = $params["img_data"];
 			$this->_imgWidth = $params["img_width"];
 			$this->img_date = time();
-			$this->_stickers = json_decode($params["stickers"]);
+			$this->_stickers = $params["stickers"];
 		}
 		$this->user = UserModel::findOne(["id" => $this->user_id]);
 		$this->_likes = count(LikeModel::findMany([], ["img_id" => $this->id]));
@@ -99,7 +99,7 @@ class ImageModel extends BaseModel
 		$validStickers = ["beer", "crown", "fire", "poop", "zzz"];
 		if (!empty($this->_stickers)) {
 			foreach ($this->_stickers as $sticker) {
-				if (!in_array($sticker->id, $validStickers)) {
+				if (!in_array($sticker["id"], $validStickers)) {
 					return false;
 				}
 			}
@@ -146,12 +146,16 @@ class ImageModel extends BaseModel
 		$this->_image = $baseimage;
 
 		foreach ($this->_stickers as $sticker) {
-			$filepath = "public/img/stickers/" . $sticker->id . ".png";
+			$filepath = "public/img/stickers/" . $sticker["id"] . ".png";
+			if (!file_exists($filepath) || $sticker["width"] === null || $sticker["height"] === null ||
+				$sticker["offsetLeft"] === null || $sticker["offsetTop"] === null) {
+				throw new HttpException("Bad request", 400, true);
+			}
 			list($width, $height) = getimagesize($filepath);
 			$stickerImage = imagecreatefrompng($filepath);
 			imagecopyresampled($this->_image, $stickerImage,
-				$sticker->offsetLeft, $sticker->offsetTop, 0, 0,
-				$sticker->width, $sticker->height, $width, $height);
+				$sticker["offsetLeft"], $sticker["offsetTop"], 0, 0,
+				$sticker["width"], $sticker["height"], $width, $height);
 			imagedestroy($stickerImage);
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 22:14:44 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/18 17:50:35 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/02 11:51:36 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ export const addThumbCard = (image) => {
 		if (!event.target.classList.contains("loading")) {
 			event.target.classList.add("loading");
 		}
-		deleteEvent(thumbCard.id).then(() => {
+		deleteEvent(image.img_id).then(() => {
 			if (event.target.classList.contains("loading")) {
 				event.target.classList.remove("loading");
 			}
