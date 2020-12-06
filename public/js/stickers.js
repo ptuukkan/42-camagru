@@ -6,9 +6,11 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 16:13:12 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/12/06 21:23:30 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/06 21:36:17 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { mode } from './edit.js';
 
 const stickers = document.getElementsByClassName("sticker");
 let stickersEnabled;
@@ -62,7 +64,7 @@ const addSticker = (id) => {
 	clone.classList.remove("ui", "image");
 	clone.style.width = stickerImage.width + "px";
 	clone.style.height = stickerImage.height + "px";
-	if (photo.height < clone.height) {
+	if (mode === 2 && photo.height < clone.height) {
 		clone.style.height = photo.height + "px";
 		clone.style.width = photo.height * (stickerImage.width / stickerImage.height) + "px";
 	}

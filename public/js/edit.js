@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/12/06 20:08:21 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/06 21:35:34 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ let blobImage;
 let streaming = false;
 let height;
 let width;
-let mode;
+export let mode;
 
 const clearPhoto = () => {
 	context.fillStyle = "#AAA";
