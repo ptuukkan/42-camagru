@@ -21,6 +21,7 @@
 		name="username"
 		placeholder="Username"
 		id="username"
+		required
 		value=<?= (isset($params["values"]["username"])) ? $params["values"]["username"] : "" ?>
 	>
   </div>
@@ -31,6 +32,7 @@
 		name="password"
 		placeholder="Password"
 		id="password"
+		required
 		value=<?= (isset($params["values"]["password"])) ? $params["values"]["password"] : "" ?>
 	>
 	<a href="/resetpassword">Reset password</a>

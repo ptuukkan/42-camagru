@@ -12,9 +12,10 @@
 /* ************************************************************************** */
 ?>
 
-<div class="ui grid">
+<div class="ui stackable grid">
 	<div class="three wide column centered">
-		<div class="ui segment">
+
+		<div class="ui segment stickerlist">
 			<div class="ui form">
 				<div class="field">
 					<div class="ui checkbox sticker">
@@ -58,9 +59,10 @@
 				</div>
 			</div>
 		</div>
+		
 	</div>
-	<div class="ten wide column centered">
-		<div class="ui fluid card">
+	<div class="ten wide column centered webcam-column">
+		<div class="ui fluid card webcam-card">
 			<div class="content">
 				<div class="right floated extra content">
 					<div class="ui toggle checkbox">
@@ -78,13 +80,17 @@
 			<div class="content" style="text-align: center">
 				<input type="file" hidden id="upload" />
 				<button class="ui button primary" id="uploadphoto" style="display: none">Upload photo</button>
-				<button class="ui button primary" id="takephoto">Take photo</button>
+				<button class="ui button orange" id="cancelphoto" style="display: none">Cancel</button>
+				<button class="ui button primary disabled" id="takephoto">Take photo</button>
 				<button class="ui button primary disabled" id="savephoto">Save photo</button>
+			</div>
+			<div class="extra content" id="imageformats" style="display: none">
+				Supported image formats: png, jpeg.
 			</div>
 		</div>
 	</div>
 	<div class="three wide column centered">
-		<div class="ui segment" style="overflow: auto; max-height: 90vh; <?= (empty($params)) ? "display: none" : "" ?>">
+		<div class="ui segment thumbcardlist" style="<?= (empty($params)) ? "display: none" : "" ?>">
 			<div class="ui one cards">
 				<?php
 					foreach ($params as $image) {

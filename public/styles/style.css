@@ -24,3 +24,26 @@ body {
 .footer-container {
 	text-align: center;
 }
+
+.stickerlist {
+	overflow: auto;
+	max-height: 90vh;
+	white-space: nowrap;
+}
+
+
+
+.thumbcardlist {
+	overflow: auto;
+	max-height: 90vh;
+}
+
+
+@media only screen and (max-width: 767px) {
+	.stickerlist .field {
+		display: inline;
+	}
+	.ui.checkbox.sticker img {
+		max-width: 20vw;
+	}
+}

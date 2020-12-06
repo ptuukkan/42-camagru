@@ -65,6 +65,8 @@ class UserModel extends BaseModel
 
 	public function getNotifications() { return $this->notifications; }
 
+	public function setNotifications($value) { $this->notifications = $value; }
+
 	public function getErrors() { return $this->_errors; }
 
 	public function hasErrors()

@@ -144,6 +144,7 @@ class UserController extends BaseController
 			}
 			if (!$user->verifyPassword($newUser->getPassword())) {
 				$user->setError("current_password", "Current password is invalid");
+				throw new Exception("", 9999);
 			}
 			if ($newUser->getEmail() !== $user->getEmail()) {
 				$user->setEmail($newUser->getEmail());
@@ -160,11 +161,14 @@ class UserController extends BaseController
 				$user->validatePwConfirm();
 				$user->setPasswordChanged();
 			}
+			$user->setNotifications($newUser->getNotifications());
 			if (!$user->hasErrors()) {
 				$user->save();
 			}
 		} catch (Exception $e) {
-			$user->setError("global", $e->getMessage());
+			if ($e->getCode() !== 9999) {
+				$user->setError("global", $e->getMessage());
+			}
 		}
 		if ($user->hasErrors()) {
 			$status = "error";
@@ -223,12 +227,12 @@ class UserController extends BaseController
 		</head>
 		<body>
 			<p>Please verify your email by clicking the link below</p>
-			<a href='localhost/verify?token=" . $token . "'>Verify Email</a>
+			<a href='" . Application::$app->baseUrl . "verify?token=" . $token . "'>Verify Email</a>
 		</body>
 		</html>
 		";
 		$headers[] = 'MIME-Version: 1.0';
-		$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+		$headers[] = 'Content-type: text/html; charset=utf-8';
 		$headers[] = 'To: ' . $username . ' <' . $email . '>';
 		$headers[] = 'From: Camagru <no-reply@camagru.com>';
 
@@ -286,12 +290,12 @@ class UserController extends BaseController
 		</head>
 		<body>
 			<p>Please set up your new password by clicking the link below</p>
-			<a href='localhost/newpassword?token=" . $token . "'>Reset Password</a>
+			<a href='" . Application::$app->baseUrl . "newpassword?token=" . $token . "'>Reset Password</a>
 		</body>
 		</html>
 		";
 		$headers[] = 'MIME-Version: 1.0';
-		$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+		$headers[] = 'Content-type: text/html; charset=utf-8';
 		$headers[] = 'To: ' . $username . ' <' . $email . '>';
 		$headers[] = 'From: Camagru <no-reply@camagru.com>';
 
@@ -323,7 +327,7 @@ class UserController extends BaseController
 		if (isset($_GET["token"])) {
 			$token = filter_var($_GET["token"], FILTER_SANITIZE_SPECIAL_CHARS);
 		}
-		if (strlen($token !== 100 || !ctype_xdigit($token))) {
+		if (strlen($token) !== 100 || !ctype_xdigit($token)) {
 			throw new HttpException("Invalid token", 400);
 		}
 		if (!isset($params["password"]) || !isset($params["password_confirm"])) {

@@ -22,6 +22,7 @@
       name="password"
       id="password"
       placeholder="Password"
+	  required
       value=<?= (isset($params["values"]["password"])) ? $params["values"]["password"] : "" ?>
     >
     <?= self::_printFieldErrors("password", $params) ?>
@@ -33,6 +34,7 @@
       name="password_confirm"
       id="password_confirm"
       placeholder="Confirm Password"
+	  required
       value=<?= (isset($params["values"]["password_confirm"])) ? $params["values"]["password_confirm"] : "" ?>
     >
     <?= self::_printFieldErrors("password_confirm", $params) ?>

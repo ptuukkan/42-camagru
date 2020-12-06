@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 22:14:44 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/12/02 11:51:36 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/06 16:48:14 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@ const delThumbCard = (id) => {
 	const thumbCard = document.getElementById(id);
 	if (thumbCard) {
 		thumbCard.remove();
+	}
+	const thumbnailList = document.querySelector('.ui.one.cards');
+	if (thumbnailList.childElementCount === 0) {
+		thumbnailList.parentElement.style.display = "none";
 	}
 }
 

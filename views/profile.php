@@ -56,6 +56,7 @@
       name="password"
       id="password"
       placeholder="Password"
+	  required
       value=<?= (isset($params["values"]["password"])) ? $params["values"]["password"] : "" ?>
     >
     <?= self::_printFieldErrors("current_password", $params) ?>

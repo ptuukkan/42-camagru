@@ -151,7 +151,7 @@ class ImageController extends BaseController
 		} catch (PDOException $e) {
 			throw new HttpException("Internal server error", 500, true);
 		}
-		if ($comment->user->getNotifications() &&
+		if ($image->user->getNotifications() &&
 			$comment->getUserId() !== $image->getUserId()) {
 			$this->_sendNotification($comment, $image);
 		}
@@ -220,7 +220,7 @@ class ImageController extends BaseController
 		</html>
 		";
 		$headers[] = 'MIME-Version: 1.0';
-		$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+		$headers[] = 'Content-type: text/html; charset=utf-8';
 		$headers[] = 'To: ' . $username . ' <' . $email . '>';
 		$headers[] = 'From: Camagru <no-reply@camagru.com>';
 

@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 16:13:12 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/18 17:38:16 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/06 19:03:01 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,61 @@ const addSticker = (id) => {
 		document.onmouseup = () => {
 			document.removeEventListener("mousemove", mouseMoveEvent);
 			document.onmouseup = null;
+			const cloneRect = clone.getBoundingClientRect();
+			const webcamRect = webcam.getBoundingClientRect();
+			if (cloneRect.top < webcamRect.top) {
+				clone.style.top = "0px";
+			}
+			if (cloneRect.left < webcamRect.left) {
+				clone.style.left = "0px";
+			}
+			if (cloneRect.right > webcamRect.right) {
+				clone.style.left = webcamRect.width - cloneRect.width + "px";
+			}
+			if (cloneRect.bottom > webcamRect.bottom) {
+				clone.style.top = webcamRect.height - cloneRect.height + "px";
+			}
+			clone.style.opacity = "1";
+		}
+
+	});
+
+	clone.addEventListener("touchstart", (event) => {
+		if (event.button === 2) {
+			return false;
+		}
+		const shiftX = event.touches[0].clientX - clone.getBoundingClientRect().left;
+ 		const shiftY = event.touches[0].clientY - clone.getBoundingClientRect().top;
+
+		const moveAt = (x, y) => {
+			clone.style.left = x - shiftX + "px";
+			clone.style.top = y - shiftY + "px";;
+		}
+
+		const touchMoveEvent = (event) => {
+			event.preventDefault();
+			const webcamRect = webcam.getBoundingClientRect();
+			const cloneRect = clone.getBoundingClientRect();
+
+			const x = event.touches[0].clientX - webcamRect.left;
+			const y = event.touches[0].clientY - webcamRect.top;
+			moveAt(x, y);
+			if (cloneRect.top < webcamRect.top || cloneRect.left < webcamRect.left ||
+				cloneRect.right > webcamRect.right || cloneRect.bottom > webcamRect.bottom) {
+				clone.style.opacity = "0.4";
+			} else {
+				clone.style.opacity = "1";
+			}
+		}
+
+		document.addEventListener("touchmove", touchMoveEvent, {passive: false});
+		clone.addEventListener("click", _event => {
+			document.removeEventListener("touchmove", touchMoveEvent);
+		});
+
+		document.ontouchend = () => {
+			document.removeEventListener("touchmove", touchMoveEvent);
+			document.ontouchend = null;
 			const cloneRect = clone.getBoundingClientRect();
 			const webcamRect = webcam.getBoundingClientRect();
 			if (cloneRect.top < webcamRect.top) {

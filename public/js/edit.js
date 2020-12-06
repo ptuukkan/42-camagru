@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/18 22:41:50 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/06 20:08:21 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@ const context = canvas.getContext("2d");
 const photo = document.querySelector("#photo");
 const video = document.querySelector("#video");
 const takePhotoButton = document.querySelector("#takephoto");
+const cancelPhotoButton = document.querySelector("#cancelphoto");
 const webCamToggle = document.querySelector("#webcamtoggle");
 const uploadButton = document.querySelector("#uploadphoto");
 const uploadIcon = document.querySelector("#uploadicon");
 const uploadInput = document.querySelector("#upload");
 const saveButton = document.querySelector("#savephoto");
 const loader = document.querySelector(".loader");
+const imageFormats = document.querySelector("#imageformats");
 let blobImage;
 let streaming = false;
 let height;
@@ -43,6 +45,9 @@ const setupWebCam = () => {
 		width = document.querySelector("#webcam-container").clientWidth;
 		if (loader.classList.contains("active")) {
 			loader.classList.remove("active");
+		}
+		if (takePhotoButton.classList.contains("disabled")) {
+			takePhotoButton.classList.remove("disabled");
 		}
 		if (!streaming) {
 			height = video.videoHeight / (video.videoWidth / width);
@@ -72,11 +77,24 @@ const setupWebCam = () => {
 		if (saveButton.classList.contains("disabled")) {
 			saveButton.classList.remove("disabled");
 		}
-	})
+		takePhotoButton.style.display = "none";
+		cancelPhotoButton.style.display = "";
+	});
+
+	cancelPhotoButton.addEventListener("click", (_event) => {
+		cancelPhotoButton.style.display = "none";
+		video.style.display = "";
+		takePhotoButton.style.display = "";
+		if (!saveButton.classList.contains("disabled")) {
+			saveButton.classList.add("disabled");
+		}
+		clearPhoto();
+	});
 }
 
 const webCamMode = () => {
 	mode = 1;
+	cancelPhotoButton.style.display = "none";
 	uploadButton.style.display = "none";
 	uploadIcon.style.display = "none";
 	video.style.display = "";
@@ -85,6 +103,7 @@ const webCamMode = () => {
 	if (!loader.classList.contains("active")) {
 		loader.classList.add("active");
 	}
+	imageFormats.style.display = "none";
 	navigator.mediaDevices.getUserMedia({ video: true, audio: false })
 		.then((stream) => {
 			video.srcObject = stream;
@@ -107,6 +126,12 @@ const setupUpload = () => {
 
 	uploadInput.addEventListener("change", (event) => {
 		if (event.target.files && event.target.files[0]) {
+			if (event.target.files[0].type !== "image/png" &&
+				event.target.files[0].type !== "image/jpeg") {
+					window.alert("Unsupported image type");
+					uploadMode();
+					return;
+				}
 			blobImage = URL.createObjectURL(event.target.files[0]);
 			photo.setAttribute('src', blobImage);
 			photo.style.display = "";
@@ -130,6 +155,13 @@ const setupUpload = () => {
 const uploadMode = () => {
 	mode = 2;
 	takePhotoButton.style.display = "none";
+	cancelPhotoButton.style.display = "none";
+	if (!takePhotoButton.classList.contains("disabled")) {
+		takePhotoButton.classList.add("disabled");
+	}
+	if (!saveButton.classList.contains("disabled")) {
+		saveButton.classList.add("disabled");
+	}
 	video.style.display = "none";
 	video.srcObject = null;
 	uploadButton.style.display = "";
@@ -137,6 +169,7 @@ const uploadMode = () => {
 	if (loader.classList.contains("active")) {
 		loader.classList.remove("active");
 	}
+	imageFormats.style.display = "";
 	disableStickers();
 	clearPhoto();
 }

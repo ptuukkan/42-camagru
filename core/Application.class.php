@@ -26,9 +26,11 @@ class Application
 	public $db;
 	public $session;
 	public static $app;
+	public $baseUrl;
 
 	public function __construct()
 	{
+		$this->baseUrl = "http://localhost/";
 		$this->_request = new Request();
 		$this->_router = new Router($this->_request);
 
