@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/12/08 17:25:19 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/08 17:48:45 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ const setupWebCam = () => {
 		if (loader.classList.contains("active")) {
 			loader.classList.remove("active");
 		}
+		enableStickers();
 		if (!streaming) {
 			height = video.videoHeight / (video.videoWidth / width);
 			if (isNaN(height)) {
@@ -113,8 +114,7 @@ const webCamMode = () => {
 			webCamToggle.disabled = true;
 			return uploadMode();
 		});
-
-	enableStickers();
+	disableStickers();
 	clearPhoto();
 }
 

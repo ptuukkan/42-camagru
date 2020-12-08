@@ -127,9 +127,14 @@ class UserModel extends BaseModel
 
 	public function validateEmail()
 	{
-		$valid = filter_var($this->email, FILTER_VALIDATE_EMAIL);
-		if (!$valid) {
+		$valid = true;
+		if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
 			$this->setError("email", "Email address is not valid");
+			$valid = false;
+		}
+		if (strlen($this->email) > 99) {
+			$this->setError("email", "Email address is too long");
+			$valid = false;
 		}
 		if ($valid && self::findOne(["email" => $this->email])) {
 			$this->setError("email", "Email address is already in use");
@@ -140,6 +145,9 @@ class UserModel extends BaseModel
 	{
 		if (strlen($this->username) < 3) {
 			$this->setError("username", "Username must be at least 3 characters");
+		}
+		if (strlen($this->username) > 50) {
+			$this->setError("username", "Username is too long");
 		}
 		$valid = !filter_var($this->username, FILTER_VALIDATE_REGEXP, [
 			"options" => ["regexp" => "/[^a-zA-Z0-9]/"]
@@ -157,6 +165,9 @@ class UserModel extends BaseModel
 	{
 		if (strlen($this->password) < 8) {
 			$this->setError("password", "Password must be at least 8 characters");
+		}
+		if (strlen($this->password) > 99) {
+			$this->setError("password", "Password is too long");
 		}
 		if (!filter_var($this->password, FILTER_VALIDATE_REGEXP, [
 			"options" => ["regexp" => "/[A-Z]/"]

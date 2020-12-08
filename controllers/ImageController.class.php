@@ -138,7 +138,7 @@ class ImageController extends BaseController
 			throw new HttpException("Not authorized", 401, true);
 		}
 		if (!isset($params["img_id"]) || !isset($params["comment_text"]) ||
-			strlen($params["comment_text"]) < 1) {
+			strlen($params["comment_text"]) < 1 || strlen($params["comment_text"]) > 126) {
 			throw new HttpException("Bad request", 400, true);
 		}
 		try {

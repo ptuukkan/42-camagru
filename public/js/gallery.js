@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/11 21:10:35 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/11/18 22:39:54 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/08 18:14:17 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ const checkCommentOver = (target) => {
 			parent.appendChild(createCommentOverDiv());
 		}
 		commentOver = parent.querySelector(".comment-over");
-		commentOver.textContent = `${target.value.length}/127`;
+		commentOver.textContent = `${target.value.length}/126`;
 	} else {
 		if (commentOver) {
 			commentOver.parentElement.remove();

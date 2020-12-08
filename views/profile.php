@@ -88,4 +88,3 @@
   <button class="ui button" type="button" onclick="window.location.href='/'">Cancel</button>
 </form>
 </div>
-<script src=/public/js/profile.js></script>
