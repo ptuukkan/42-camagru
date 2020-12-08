@@ -6,13 +6,14 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 16:13:12 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/12/06 21:36:17 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/08 17:24:44 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { mode } from './edit.js';
 
 const stickers = document.getElementsByClassName("sticker");
+const takePhotoButton = document.querySelector("#takephoto");
 let stickersEnabled;
 let selectedStickers = new Array();
 
@@ -34,7 +35,6 @@ for (let sticker of stickers) {
 }
 
 export const disableStickers = () => {
-	clearStickers();
 	for (let sticker of stickers) {
 		if (!sticker.classList.contains("disabled")) {
 			sticker.classList.add("disabled");
@@ -52,6 +52,15 @@ export const enableStickers = () => {
 		sticker.querySelector("input").disabled = false;
 	}
 	stickersEnabled = true;
+}
+
+export const clearStickers = () => {
+	for (let sticker of stickers) {
+		if (sticker.querySelector("input").checked) {
+			removeSticker(sticker.querySelector("input").id);
+			sticker.querySelector("input").checked = false;
+		}
+	}
 }
 
 const addSticker = (id) => {
@@ -185,12 +194,24 @@ const addSticker = (id) => {
 
 	});
 	webcam.appendChild(clone);
+
+	if (mode === 1 && selectedStickers.length !== 0) {
+		if (takePhotoButton.classList.contains("disabled")) {
+			takePhotoButton.classList.remove("disabled");
+		}
+	}
 }
 
 const removeSticker = (id) => {
 	const clone = document.querySelector(`#${id}-clone`);
 	selectedStickers = selectedStickers.filter(a => a !== clone.id);
 	clone.remove();
+
+	if (mode === 1 && selectedStickers.length === 0) {
+		if (!takePhotoButton.classList.contains("disabled")) {
+			takePhotoButton.classList.add("disabled");
+		}
+	}
 }
 
 
@@ -206,13 +227,4 @@ export const getStickers = () => {
 		};
 	});
 	return (JSON.stringify(stickers));
-}
-
-export const clearStickers = () => {
-	for (let sticker of stickers) {
-		if (sticker.querySelector("input").checked) {
-			removeSticker(sticker.querySelector("input").id);
-			sticker.querySelector("input").checked = false;
-		}
-	}
 }

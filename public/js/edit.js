@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 21:09:45 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/12/06 21:35:34 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/08 17:25:19 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,6 @@ const setupWebCam = () => {
 		if (loader.classList.contains("active")) {
 			loader.classList.remove("active");
 		}
-		if (takePhotoButton.classList.contains("disabled")) {
-			takePhotoButton.classList.remove("disabled");
-		}
 		if (!streaming) {
 			height = video.videoHeight / (video.videoWidth / width);
 			if (isNaN(height)) {
@@ -77,6 +74,7 @@ const setupWebCam = () => {
 		if (saveButton.classList.contains("disabled")) {
 			saveButton.classList.remove("disabled");
 		}
+		disableStickers();
 		takePhotoButton.style.display = "none";
 		cancelPhotoButton.style.display = "";
 	});
@@ -88,6 +86,7 @@ const setupWebCam = () => {
 		if (!saveButton.classList.contains("disabled")) {
 			saveButton.classList.add("disabled");
 		}
+		enableStickers();
 		clearPhoto();
 	});
 }
@@ -147,6 +146,7 @@ const setupUpload = () => {
 			if (!saveButton.classList.contains("disabled")) {
 				saveButton.classList.add("disabled");
 			}
+			clearStickers();
 			disableStickers();
 		}
 	})
@@ -170,6 +170,7 @@ const uploadMode = () => {
 		loader.classList.remove("active");
 	}
 	imageFormats.style.display = "";
+	clearStickers();
 	disableStickers();
 	clearPhoto();
 }

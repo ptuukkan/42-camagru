@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 22:14:44 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/12/06 16:48:14 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/08 17:29:57 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,16 @@ export const addThumbCard = (image) => {
 			<img src="${image.img_path}">
 		</div>
 		<div class="extra content" style="text-align: center">
-			<button class="ui button negative">Delete</button>
+			<button
+				class="ui button negative fluid compact"
+				style="padding-left: 0px; padding-right: 0px;"
+			>
+				<i
+					class="trash large icon"
+					style="margin: 0px"
+				>
+				</i>
+			</button>
 		</div>
 	`;
 	const div = document.createElement('div');

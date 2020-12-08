@@ -17,6 +17,15 @@
 		<img src="<?= $image->getImgPath() ?>">
 	</div>
 	<div class="extra content" style="text-align: center">
-		<button class="ui button negative fluid compact" style="padding-left: 0px; padding-right: 0px"><i class="trash large icon" style="margin: 0px"></i></button>
+		<button
+			class="ui button negative fluid compact"
+			style="padding-left: 0px; padding-right: 0px;"
+		>
+			<i
+				class="trash large icon"
+				style="margin: 0px"
+			>
+			</i>
+		</button>
 	</div>
 </div>
