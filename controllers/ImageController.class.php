@@ -151,8 +151,7 @@ class ImageController extends BaseController
 		} catch (PDOException $e) {
 			throw new HttpException("Internal server error", 500, true);
 		}
-		if ($image->user->getNotifications() &&
-			$comment->getUserId() !== $image->getUserId()) {
+		if ($image->user->getNotifications()) {
 			$this->_sendNotification($comment, $image);
 		}
 

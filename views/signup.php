@@ -13,7 +13,7 @@
 ?>
 
 <div class="ui grid">
-<form class="ui form six wide column centered <?= (isset($params["errors"])) ? "error" : "" ?>" method="post">
+<form class="ui form six wide computer twelve wide mobile column centered <?= (isset($params["errors"])) ? "error" : "" ?>" method="post">
   <div class="field required">
     <label>Email address</label>
     <input

@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 16:13:12 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/12/08 17:24:44 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/08 19:16:52 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ const addSticker = (id) => {
 	clone.classList.remove("ui", "image");
 	clone.style.width = stickerImage.width + "px";
 	clone.style.height = stickerImage.height + "px";
-	if (mode === 2 && photo.height < clone.height) {
+	if (mode === 2 && photo.height < stickerImage.height) {
 		clone.style.height = photo.height + "px";
 		clone.style.width = photo.height * (stickerImage.width / stickerImage.height) + "px";
 	}

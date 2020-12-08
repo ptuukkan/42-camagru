@@ -12,7 +12,7 @@
 /* ************************************************************************** */
 ?>
 <div class="ui grid">
-	<div class="ten wide column centered">
+	<div class="ten wide computer sixteen wide mobile column centered">
 		<?php
 			foreach ($params["images"] as $image) {
 				echo self::_printImage($image);

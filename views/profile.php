@@ -13,7 +13,7 @@
 ?>
 
 <div class="ui grid">
-<form class="ui form six wide column centered <?= (isset($params["status"])) ? $params["status"] : "" ?>" method="post">
+<form class="ui form six wide computer twelve wide mobile column centered <?= (isset($params["status"])) ? $params["status"] : "" ?>" method="post">
 	<div class="ui success message">
 		<p>Saved</p>
 	</div>
