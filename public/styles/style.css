@@ -32,10 +32,9 @@ body {
 }
 
 
-
 .thumbcardlist {
 	overflow: auto;
-	max-height: 90vh;
+	max-height: 85vh;
 }
 
 

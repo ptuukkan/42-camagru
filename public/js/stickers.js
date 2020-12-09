@@ -6,7 +6,7 @@
 /*   By: ptuukkan <ptuukkan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/12 16:13:12 by ptuukkan          #+#    #+#             */
-/*   Updated: 2020/12/08 19:16:52 by ptuukkan         ###   ########.fr       */
+/*   Updated: 2020/12/09 18:28:04 by ptuukkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ const addSticker = (id) => {
 			clone.style.opacity = "1";
 		}
 
-	});
+	}, {passive: true});
 	webcam.appendChild(clone);
 
 	if (mode === 1 && selectedStickers.length !== 0) {

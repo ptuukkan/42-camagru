@@ -90,7 +90,7 @@
 		</div>
 	</div>
 	<div class="three wide column centered">
-		<div class="ui segment thumbcardlist" style="padding: 0px; <?= (empty($params)) ? "display: none" : "" ?>">
+		<div class="ui segment thumbcardlist" style="padding-left: 0px; padding-right: 0px; <?= (empty($params)) ? "display: none" : "" ?>">
 			<div class="ui one cards">
 				<?php
 					foreach ($params as $image) {

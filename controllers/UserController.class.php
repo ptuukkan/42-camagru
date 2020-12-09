@@ -38,8 +38,8 @@ class UserController extends BaseController
 	{
 		if (Application::$app->session->loggedIn) {
 			Application::$app->session->logout();
-			header("Location: /");
 		}
+		header("Location: /");
 	}
 
 	public function profile($params)
