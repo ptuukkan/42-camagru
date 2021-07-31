@@ -13,7 +13,7 @@ Shared photos must be likeable and commentable.
 I used a MVC pattern to serve html pages to users complimented with some JavaScript, styled using SemanticUI.
 I chose MySQL as database.
 
-## Screenshots
+## Demo
 https://user-images.githubusercontent.com/32325110/127744353-47af7d98-5545-4e4c-be01-8b84950a50fe.mp4
 
 
