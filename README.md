@@ -7,7 +7,7 @@ Shared photos must be likeable and commentable.
 - Backend must be coded with PHP and standard library only.
 - Frontend must use HTML, CSS, and vanilla JavaScript (no frameworks or libraries).
 - PDO must be used to communicate with database.
-- Application must be mobile friendly
+- Application must be mobile friendly.
 
 ## Solution
 I used a MVC pattern to serve html pages to users complimented with some JavaScript, styled using SemanticUI.
